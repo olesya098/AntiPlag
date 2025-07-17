@@ -23,7 +23,7 @@ private val DarkColorScheme = darkColorScheme(
     surface = darkGray.copy(alpha = 0.5f),
 //    onPrimary = deepBlue,
     scrim = grayDevider,//buttom
-//    outline = orange,//оранжевый
+    outline = grayNavigation,//оранжевый
 //    inverseOnSurface = Color(0xFF525661), //точка
 //    surfaceContainerLow = white.copy(alpha = 0.6f),//skip onboarding
 //    inversePrimary = white.copy(alpha = 0.6f), // РЯДОМ С TEXT FIELD
@@ -52,7 +52,7 @@ private val LightColorScheme = lightColorScheme(
     surface = liteGray.copy(alpha = 0.3f),
 //    onPrimary = deepBlue,
     scrim = grayDeviderLite,//buttom
-//    outline = orange,//оранжевый
+    outline = grayNavigationLite,//оранжевый
 //    inverseOnSurface = Color(0xFFCECFD2), //точка
 //    surfaceContainerLow = bigText,//skip onboarding
 //    inversePrimary = smallText, // РЯДОМ С TEXT FIELD
