@@ -29,8 +29,6 @@ fun AboutScreen(navController: NavHostController) {
     CustomScaffold(
         title = stringResource(R.string.about),
         actions = {
-
-
         },
         navigationIcon = {
 
@@ -60,7 +58,7 @@ fun AboutScreen(navController: NavHostController) {
         ) {
             Text(
                 text = "AntiPlag",
-                modifier = Modifier.padding(bottom = 10.dp),
+                modifier = Modifier.padding(bottom = 10.dp, top = 10.dp),
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.bodyMedium,
                 fontSize = 32.sp
@@ -68,29 +66,22 @@ fun AboutScreen(navController: NavHostController) {
             AboutInformation(
                 image = R.drawable.rocket,
                 title = stringResource(R.string.speed),
-                text = "instant text analysis for borrowings."
-                //мгновенный анализ текста на заимствования.
+                text = stringResource(R.string.instant_text_analysis_for_borrowings)
             )
             AboutInformation(
                 image = R.drawable.target,
-                title = "Accuracy",
-                // Точность
-                text = "comparison with millions of sources, including academic papers and web pages."
-                //  сравнение с миллионами источников, включая академические работы и веб-страницы.
+                title = stringResource(R.string.accuracy),
+                text = stringResource(R.string.comparison_with_millions_of_sources_including_academic_papers_and_web_pages)
             )
             AboutInformation(
                 image = R.drawable.telephone,
-                title = "Ease of use",
-                //  Простота использования
-                text = "upload a text or document in one click."
-                //загружай текст или документ в один клик.
+                title = stringResource(R.string.ease_of_use),
+                text = stringResource(R.string.upload_a_text_or_document_in_one_click)
             )
             AboutInformation(
                 image = R.drawable.people,
-                title = "For everyone",
-                //  Для всех
-                text = "students, teachers, copywriters, lawyers."
-                // студенты, преподаватели, копирайтеры, юристы.
+                title = stringResource(R.string.for_everyone),
+                text = stringResource(R.string.students_teachers_copywriters_lawyers)
             )
 
         }

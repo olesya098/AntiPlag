@@ -7,4 +7,11 @@
     <string name="history">History</string>
     <string name="login">Login</string>
     <string name="your_email">Your Email</string>
+    <string name="instant_text_analysis_for_borrowings">instant text analysis for borrowings.</string>
+    <string name="accuracy">Accuracy</string>
+    <string name="comparison_with_millions_of_sources_including_academic_papers_and_web_pages">comparison with millions of sources, including academic papers and web pages.</string>
+    <string name="ease_of_use">Ease of use</string>
+    <string name="upload_a_text_or_document_in_one_click">upload a text or document in one click.</string>
+    <string name="for_everyone">For everyone</string>
+    <string name="students_teachers_copywriters_lawyers">students, teachers, copywriters, lawyers.</string>
 </resources>
