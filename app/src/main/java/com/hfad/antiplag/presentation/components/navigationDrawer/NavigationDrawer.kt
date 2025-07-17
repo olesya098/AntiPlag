@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hfad.antiplag.R
@@ -48,10 +49,10 @@ fun NavigationDrawer(
     val scope = rememberCoroutineScope()
 
     val items = listOf(
-        DrawerItem(icon = R.drawable.add, label = "New Chat"),
-        DrawerItem(icon = R.drawable.schedule, label = "History"),
+        DrawerItem(icon = R.drawable.add, label = stringResource(R.string.new_chat)),
+        DrawerItem(icon = R.drawable.schedule, label = stringResource(R.string.history)),
         DrawerItem(icon = R.drawable.error, label = "About"),
-        DrawerItem(icon = R.drawable.login, label = "Login")
+        DrawerItem(icon = R.drawable.login, label = stringResource(R.string.login))
     )
 
     var selectedItem by remember { mutableStateOf(items[0]) }
@@ -62,7 +63,9 @@ fun NavigationDrawer(
         gesturesEnabled = drawerState.isOpen,
         drawerContent = {
             ModalDrawerSheet(
-                modifier = Modifier.fillMaxWidth(drawerWidth).background(MaterialTheme.colorScheme.background)
+                modifier = Modifier
+                    .fillMaxWidth(drawerWidth)
+                    .background(MaterialTheme.colorScheme.background)
             ) {
                 Box(
                     modifier = Modifier
@@ -141,7 +144,7 @@ fun NavigationDrawer(
                         .padding(10.dp)
                 ) {
                     Text(
-                        text = "Your Email",
+                        text = stringResource(R.string.your_email),
                         fontSize = 17.sp,
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.bodySmall,

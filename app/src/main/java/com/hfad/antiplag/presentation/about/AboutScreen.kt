@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -26,7 +27,7 @@ import com.hfad.antiplag.presentation.components.customScaffold.CustomScaffold
 @Composable
 fun AboutScreen(navController: NavHostController) {
     CustomScaffold(
-        title = "About",
+        title = stringResource(R.string.about),
         actions = {
 
 
@@ -66,23 +67,30 @@ fun AboutScreen(navController: NavHostController) {
             )
             AboutInformation(
                 image = R.drawable.rocket,
-                title = "Скорость",
-                text = "мгновенный анализ текста на заимствования."
+                title = stringResource(R.string.speed),
+                text = "instant text analysis for borrowings."
+                //мгновенный анализ текста на заимствования.
             )
             AboutInformation(
                 image = R.drawable.target,
-                title = "Точность",
-                text = "сравнение с миллионами источников, включая академические работы и веб-страницы."
+                title = "Accuracy",
+                // Точность
+                text = "comparison with millions of sources, including academic papers and web pages."
+                //  сравнение с миллионами источников, включая академические работы и веб-страницы.
             )
             AboutInformation(
                 image = R.drawable.telephone,
-                title = "Простота использования",
-                text = "загружай текст или документ в один клик."
+                title = "Ease of use",
+                //  Простота использования
+                text = "upload a text or document in one click."
+                //загружай текст или документ в один клик.
             )
             AboutInformation(
                 image = R.drawable.people,
-                title = "Для всех",
-                text = "студенты, преподаватели, копирайтеры, юристы."
+                title = "For everyone",
+                //  Для всех
+                text = "students, teachers, copywriters, lawyers."
+                // студенты, преподаватели, копирайтеры, юристы.
             )
 
         }

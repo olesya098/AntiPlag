@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hfad.antiplag.R
 import com.hfad.antiplag.presentation.components.bottonBar.filePicker.FilePicker
@@ -78,16 +79,17 @@ fun BottomBar() {
                 focusedContainerColor = MaterialTheme.colorScheme.background,
                 unfocusedContainerColor = MaterialTheme.colorScheme.background,
             ),
-            modifier = Modifier.border(
-                width = 1.dp,
-                color = blueLite,
-                shape = RoundedCornerShape(32.dp)
-            )
+            modifier = Modifier
+                .border(
+                    width = 1.dp,
+                    color = blueLite,
+                    shape = RoundedCornerShape(32.dp)
+                )
                 .height(56.dp),
             shape = RoundedCornerShape(32.dp),
             label = {
                 Text(
-                    text = "Message",
+                    text = stringResource(R.string.message),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
 
