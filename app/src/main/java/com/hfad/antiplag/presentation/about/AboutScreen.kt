@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,7 +26,7 @@ import com.hfad.antiplag.presentation.components.customScaffold.CustomScaffold
 @Composable
 fun AboutScreen(navController: NavHostController) {
     CustomScaffold(
-        title = "AntiPlag",
+        title = "About",
         actions = {
 
 
@@ -51,7 +52,7 @@ fun AboutScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    Color.White
+                    MaterialTheme.colorScheme.background
                 )
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -59,7 +60,8 @@ fun AboutScreen(navController: NavHostController) {
             Text(
                 text = "AntiPlag",
                 modifier = Modifier.padding(bottom = 10.dp),
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.bodyMedium,
                 fontSize = 32.sp
             )
             AboutInformation(

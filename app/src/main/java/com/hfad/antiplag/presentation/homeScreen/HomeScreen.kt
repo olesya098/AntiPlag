@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,9 +42,10 @@ fun HomeScreen(navController: NavHostController) {
         },
         navigationIcon = {
 
-            Image(
+            Icon(
                 painter = painterResource(id = R.drawable.menu),
                 contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
 
             )
@@ -52,7 +55,7 @@ fun HomeScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    Color.White
+                    MaterialTheme.colorScheme.background
                 )
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally,

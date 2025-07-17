@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -40,13 +41,16 @@ fun AboutInformation(
         ){
             Text(
                 text = title,
-                color = Color.Black,
-                fontSize = 23.sp
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.bodySmall,
+                fontSize = 20.sp,
+
             )
             Text(
                 text = text,
-                color = Color.Black,
-                fontSize = 18.sp
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.labelSmall,
+                fontSize = 17.sp
             )
         }
     }
