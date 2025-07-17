@@ -14,54 +14,56 @@ fun AppNavigation() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = SplashRoute
-//        startDestination = Routes.SPLASHSCREEN
+        startDestination = Routes.SPLASHSCREEN
+
+        //SplashRoute
+
     ) {
-        composable <SplashRoute>{
-            SplashScreen(navController)
-        }
-        composable <HomeRoute>{
-            HomeScreen(navController)
-        }
-        composable <AboutRoute>{
-            AboutScreen(navController)
-        }
 //        composable <SplashRoute>{
 //            SplashScreen(navController)
 //        }
-//        composable <SplashRoute>{
-//            SplashScreen(navController)
-//        }
-//        composable <SplashRoute>{
-//            SplashScreen(navController)
-//        }
-//        composable <SplashRoute>{
-//            SplashScreen(navController)
-//        }
-//
-//        composable(Routes.SPLASHSCREEN) {
-//            SplashScreen(navController)
-//
-//        }
-//        composable(Routes.HOME) {
+//        composable <HomeRoute>{
 //            HomeScreen(navController)
-//
 //        }
-//        composable(Routes.LOGIN) {
-//
-//        }
-//        composable(Routes.SIGNUP) {
-//
-//        }
-//        composable(Routes.ABOUT) {
+//        composable <AboutRoute>{
 //            AboutScreen(navController)
-//
 //        }
-//        composable(Routes.HISTORY) {
-//
+//        composable <SplashRoute>{
+//            SplashScreen(navController)
 //        }
-//        composable(Routes.RESULTS) {
-//
+//        composable <SplashRoute>{
+//            SplashScreen(navController)
 //        }
+//        composable <SplashRoute>{
+//            SplashScreen(navController)
+//        }
+//        composable <SplashRoute>{
+//            SplashScreen(navController)
+//        }
+//
+        composable(Routes.SPLASHSCREEN) {
+            SplashScreen(navController)
+
+        }
+        composable(Routes.HOME) {
+            HomeScreen(navController)
+
+        }
+        composable(Routes.LOGIN) {
+
+        }
+        composable(Routes.SIGNUP) {
+
+        }
+        composable(Routes.ABOUT) {
+            AboutScreen(navController)
+
+        }
+        composable(Routes.HISTORY) {
+
+        }
+        composable(Routes.RESULTS) {
+
+        }
     }
 }

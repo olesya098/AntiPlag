@@ -1,5 +1,6 @@
 package com.hfad.antiplag.presentation.splashScreen
 
+//import com.hfad.antiplag.navigation.Routes
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -24,21 +25,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.hfad.antiplag.R
-import com.hfad.antiplag.navigation.AppNavigation
-import com.hfad.antiplag.navigation.HomeRoute
-import com.hfad.antiplag.navigation.SplashRoute
-//import com.hfad.antiplag.navigation.Routes
+import com.hfad.antiplag.navigation.Routes
 import com.hfad.antiplag.ui.theme.blueLite
 import kotlinx.coroutines.delay
 
@@ -46,12 +41,12 @@ import kotlinx.coroutines.delay
 fun SplashScreen(navController: NavHostController) {
     LaunchedEffect(Unit) {
         delay(3400L)
-//        navController.navigate(Routes.HOME) {
-//            popUpTo(Routes.SPLASHSCREEN) { inclusive = true } // Удаляем SplashScreen из стека
-//        }
-        navController.navigate(HomeRoute) {
-            popUpTo(SplashRoute) { inclusive = true } // Удаляем SplashScreen из стека
-       }
+        navController.navigate(Routes.HOME) {
+            popUpTo(Routes.SPLASHSCREEN) { inclusive = true } // Удаляем SplashScreen из стека
+        }
+//        navController.navigate(HomeRoute) {
+//            popUpTo(SplashRoute) { inclusive = true } // Удаляем SplashScreen из стека
+//       }
     }
     // 1. Создаем бесконечную анимацию
     val infiniteTransition = rememberInfiniteTransition()

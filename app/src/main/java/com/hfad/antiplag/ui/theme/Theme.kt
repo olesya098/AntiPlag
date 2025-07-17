@@ -74,20 +74,89 @@ private val LightColorScheme = lightColorScheme(
 
 )
 
+//@Composable
+//fun AntiPlagTheme(
+//    darkTheme: Boolean = isSystemInDarkTheme(),
+//    content: @Composable () -> Unit
+//) {
+//   val colors = if (darkTheme){
+//       DarkColorScheme
+//   }else{
+//       LightColorScheme
+//   }
+//
+//    MaterialTheme(
+//        content = content,
+//        colorScheme = colors,
+//        typography = Typography,
+//    )
+//}
 @Composable
 fun AntiPlagTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-   val colors = if (darkTheme){
-       DarkColorScheme
-   }else{
-       LightColorScheme
-   }
+    val colors = if (darkTheme) {
+        darkColorScheme(
+            background = coolBlack, //задний фон
+            primary = com.hfad.antiplag.ui.theme.white, //title
+//    secondary = white.copy(alpha = 0.6f), //subtitle
+            surface = darkGray.copy(alpha = 0.5f),
+//    onPrimary = deepBlue,
+            scrim = grayDevider,//buttom
+            outline = grayNavigation,//оранжевый
+//    inverseOnSurface = Color(0xFF525661), //точка
+//    surfaceContainerLow = white.copy(alpha = 0.6f),//skip onboarding
+//    inversePrimary = white.copy(alpha = 0.6f), // РЯДОМ С TEXT FIELD
+//    surfaceContainer = smallText, //текст который ввожу
+//    inverseSurface = white.copy(alpha = 0.8f),//Цвет text field
+//    onSurfaceVariant = grayDark.copy(alpha = 0.5f),//placeHolder
+//    error = pink,//forgor password
+//    onErrorContainer = grayDark, //ты не участник?
+//    onTertiaryContainer = Color(0xFF000000),//mother language color text
+//    surfaceContainerLowest = beige,//для карточек выбора языка
+//    surfaceContainerHighest = Color(0xFFD9D9D9),//Круг где должен быть image user`а
+//    primaryContainer = lightLightGray, //top user
+//    onSecondaryContainer = green,//зелёный
+//    surfaceContainerHigh = Color(0xFFFFFFFF), //текст
+//    tertiary = Color(0xFF1B2336), //для фона на странице выбора фото
+//    tertiaryContainer = gray,//текст карточки wordpractice
+//    onTertiary = purple
+
+        )
+    } else {
+        lightColorScheme(
+            background = com.hfad.antiplag.ui.theme.white,
+            primary = coolBlack, //title
+//    secondary = bigText.copy(alpha = 0.6f), //subtitle
+            surface = liteGray.copy(alpha = 0.3f),
+//    onPrimary = deepBlue,
+            scrim = grayDeviderLite,//buttom
+            outline = grayNavigationLite,//оранжевый
+//    inverseOnSurface = Color(0xFFCECFD2), //точка
+//    surfaceContainerLow = bigText,//skip onboarding
+//    inversePrimary = smallText, // РЯДОМ С TEXT FIELD
+//    surfaceContainer = smallText, //текст который ввожу
+//    inverseSurface = bigText.copy(alpha = 0.08f),//Цвет text field
+//    onSurfaceVariant = grayDark.copy(alpha = 0.5f),//placeHolder
+//    error = pink,//forgor password
+//    onErrorContainer = grayDark, //ты не участник?
+//    onTertiaryContainer = Color(0xFF000000),//mother language color text
+//    surfaceContainerLowest = beige,//для карточек выбора языка
+//    surfaceContainerHighest = Color(0xFFD9D9D9),//Круг где должен быть image user`а
+//    primaryContainer = lightLightGray, //top user
+//    onSecondaryContainer = green,//зелёный
+//    surfaceContainerHigh = Color(0xFF000000), //текст
+//    tertiary = Color(0xFF1B2336), //для фона на странице выбора фото
+//    tertiaryContainer = gray,//текст карточки wordpractice
+//    onTertiary = purple
+
+        )
+    }
 
     MaterialTheme(
-        content = content,
         colorScheme = colors,
         typography = Typography,
+        content = content
     )
 }

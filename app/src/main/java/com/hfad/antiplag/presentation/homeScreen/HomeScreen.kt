@@ -14,67 +14,79 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.hfad.antiplag.R
-import com.hfad.antiplag.navigation.AboutRoute
+import com.hfad.antiplag.navigation.Routes
 import com.hfad.antiplag.presentation.components.bottonBar.BottomBar
 import com.hfad.antiplag.presentation.components.customScaffold.CustomScaffold
 import com.hfad.antiplag.presentation.components.navigationDrawer.NavigationDrawer
+import com.hfad.antiplag.ui.theme.AntiPlagTheme
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    var isDarkTheme by remember { mutableStateOf(false) }
 
-    NavigationDrawer(
-        drawerState = drawerState,
-        onMenuClick = {
-            scope.launch {
-                if (drawerState.isClosed) drawerState.open()
-                else drawerState.close()
-            }
-        }
-    ) { innerPadding ->
-        CustomScaffold(
-            title = "AntiPlag",
-            actions = {
-                Image(
-                    painter = painterResource(id = R.drawable.information),
-                    contentDescription = "About",
-                    modifier = Modifier
-                        .size(27.dp)
-                        .clickable { navController.navigate(AboutRoute) }
-                )
+    AntiPlagTheme(darkTheme = isDarkTheme) {
+        NavigationDrawer(
+            drawerState = drawerState,
+            onMenuClick = {
+                scope.launch {
+                    if (drawerState.isClosed) drawerState.open()
+                    else drawerState.close()
+                }
             },
-            navigationIcon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.menu),
-                    contentDescription = "Menu",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickable {
-                            scope.launch {
-                                if (drawerState.isClosed) drawerState.open()
-                                else drawerState.close()
+            navController = navController,
+            isDarkTheme = isDarkTheme,
+            onThemeChange = { newTheme -> isDarkTheme = newTheme },
+        ) { innerPadding ->
+            CustomScaffold(
+                title = "AntiPlag",
+                actions = {
+                    Image(
+                        painter = painterResource(id = R.drawable.information),
+                        contentDescription = "About",
+                        modifier = Modifier
+                            .size(27.dp)
+                            .clickable {
+                                navController.navigate(Routes.ABOUT)
+                                //   navController.navigate(AboutRoute)
                             }
-                        }
-                )
-            }
-        ) { scaffoldPadding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
-                    .padding(scaffoldPadding)
-                    .padding(innerPadding),
+                    )
+                },
+                navigationIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.menu),
+                        contentDescription = "Menu",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable {
+                                scope.launch {
+                                    if (drawerState.isClosed) drawerState.open()
+                                    else drawerState.close()
+                                }
+                            }
+                    )
+                }
+            ) { scaffoldPadding ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(scaffoldPadding)
+                        .padding(innerPadding),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -91,5 +103,5 @@ fun HomeScreen(navController: NavHostController) {
                 }
             }
         }
-
+    }
 }
