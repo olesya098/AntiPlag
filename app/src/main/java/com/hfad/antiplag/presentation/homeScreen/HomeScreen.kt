@@ -2,6 +2,7 @@ package com.hfad.antiplag.presentation.homeScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,19 +15,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.hfad.antiplag.R
+import com.hfad.antiplag.navigation.AboutRoute
 import com.hfad.antiplag.presentation.components.bottonBar.BottomBar
 import com.hfad.antiplag.presentation.components.customScaffold.CustomScaffold
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavHostController) {
     CustomScaffold(
         title = "AntiPlag",
         actions = {
             Image(
                 painter = painterResource(id = R.drawable.information),
                 contentDescription = null,
-                modifier = Modifier.size(27.dp)
+                modifier = Modifier
+                    .size(27.dp)
+                    .clickable {
+                        navController.navigate(AboutRoute)
+//                        navController.navigate(Routes.ABOUT)
+                    }
             )
 
         },

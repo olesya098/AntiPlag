@@ -31,17 +31,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.hfad.antiplag.R
 import com.hfad.antiplag.navigation.AppNavigation
-import com.hfad.antiplag.navigation.Routes
+import com.hfad.antiplag.navigation.HomeRoute
+import com.hfad.antiplag.navigation.SplashRoute
+//import com.hfad.antiplag.navigation.Routes
 import com.hfad.antiplag.ui.theme.blueLite
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen (navController: NavController){
+fun SplashScreen(navController: NavHostController) {
     LaunchedEffect(Unit) {
         delay(3400L)
-        navController.navigate(Routes.HOME)
+//        navController.navigate(Routes.HOME) {
+//            popUpTo(Routes.SPLASHSCREEN) { inclusive = true } // Удаляем SplashScreen из стека
+//        }
+        navController.navigate(HomeRoute) {
+            popUpTo(SplashRoute) { inclusive = true } // Удаляем SplashScreen из стека
+       }
     }
     // 1. Создаем бесконечную анимацию
     val infiniteTransition = rememberInfiniteTransition()
@@ -93,7 +101,8 @@ fun SplashScreen (navController: NavController){
     ) {
 
         Box(
-            modifier = Modifier.weight(1f)  // Занимает все доступное пространство кроме текста
+            modifier = Modifier
+                .weight(1f)  // Занимает все доступное пространство кроме текста
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
