@@ -66,37 +66,38 @@ fun NavigationDrawer(
 //    ) {
         val scope = rememberCoroutineScope()
 
-        val items = listOf(
-            DrawerItem(
-                icon = R.drawable.add,
-                label = stringResource(R.string.new_chat),
-                route = Routes.HOME
-            ),
-            DrawerItem(
-                icon = R.drawable.schedule,
-                label = stringResource(R.string.history),
-                route = Routes.HOME
-            ),
-            DrawerItem(
-                icon = R.drawable.error,
-                label = "About",
-                route = Routes.ABOUT
-            ),
-            DrawerItem(
-                icon = R.drawable.login,
-                label = stringResource(R.string.login),
-                route = Routes.HOME
-            )
+
+    val items = listOf(
+        DrawerItem(
+            icon = R.drawable.add,
+            label = stringResource(R.string.new_chat),
+            route = Routes.HOME
+        ),
+        DrawerItem(
+            icon = R.drawable.schedule,
+            label = stringResource(R.string.history),
+            route = Routes.HISTORY
+        ),
+        DrawerItem(
+            icon = R.drawable.error,
+            label = "About",
+            route = Routes.ABOUT
+        ),
+        DrawerItem(
+            icon = R.drawable.login,
+            label = stringResource(R.string.login),
+            route = Routes.LOGIN // Изменил с HOME на LOGIN
         )
+    )
 
-        var selectedItem by remember { mutableStateOf(items[0]) }
-        val drawerWidth = remember { 0.9f }
+    var selectedItem by remember { mutableStateOf(items[0]) }
+    val drawerWidth = remember { 0.9f }
 
-        ModalNavigationDrawer(
-            drawerState = drawerState,
-            modifier = Modifier.background(MaterialTheme.colorScheme.background),
-            gesturesEnabled = drawerState.isOpen,
-            drawerContent = {
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        modifier = Modifier.background(MaterialTheme.colorScheme.background),
+        gesturesEnabled = drawerState.isOpen,
+        drawerContent = {
                 ModalDrawerSheet(
                     modifier = Modifier
                         .fillMaxWidth(drawerWidth)
@@ -145,8 +146,21 @@ fun NavigationDrawer(
                                 },
                                 selected = isSelected,
                                 onClick = {
-                                    scope.launch { drawerState.close() }
-                                    selectedItem = item
+                                    scope.launch {
+                                        drawerState.close()
+                                        selectedItem = item
+                                        // Добавляем навигацию здесь
+                                        navController.navigate(item.route) {
+                                            // Очищаем back stack до стартового экрана
+                                            popUpTo(navController.graph.startDestinationId) {
+                                                saveState = true
+                                            }
+                                            // Предотвращаем множественные копии экрана
+                                            launchSingleTop = true
+                                            // Восстанавливаем состояние
+                                            restoreState = true
+                                        }
+                                    }
                                 },
                                 icon = {
                                     Icon(
@@ -164,6 +178,7 @@ fun NavigationDrawer(
                             )
                         }
                     }
+
 
                     Divider(
                         modifier = Modifier

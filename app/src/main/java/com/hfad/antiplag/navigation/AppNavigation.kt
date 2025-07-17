@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.hfad.antiplag.presentation.about.AboutScreen
+import com.hfad.antiplag.presentation.historyScreen.HistoryScreen
 import com.hfad.antiplag.presentation.homeScreen.HomeScreen
 import com.hfad.antiplag.presentation.splashScreen.SplashScreen
 
@@ -60,6 +61,7 @@ fun AppNavigation() {
 
         }
         composable(Routes.HISTORY) {
+            HistoryScreen(navController)
 
         }
         composable(Routes.RESULTS) {
