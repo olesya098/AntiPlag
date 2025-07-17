@@ -1,5 +1,6 @@
 package com.hfad.antiplag.presentation.components.bottonBar
 
+import android.R.attr.label
 import android.R.id.message
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,6 +33,7 @@ import com.hfad.antiplag.R
 import com.hfad.antiplag.presentation.components.bottonBar.filePicker.FilePicker
 import com.hfad.antiplag.presentation.components.bottonBar.filePicker.readText
 import com.hfad.antiplag.ui.theme.blueLite
+import com.hfad.antiplag.ui.theme.liteGray
 import kotlinx.coroutines.launch
 
 @Composable
@@ -69,8 +72,8 @@ fun BottomBar() {
                 unfocusedTextColor = Color.DarkGray,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedLabelColor = Color.LightGray,
-                unfocusedLabelColor = Color.LightGray,
+                focusedLabelColor = liteGray,
+                unfocusedLabelColor = liteGray,
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
             ),
@@ -78,7 +81,8 @@ fun BottomBar() {
                 width = 1.dp,
                 color = blueLite,
                 shape = RoundedCornerShape(32.dp)
-            ),
+            )
+                .height(56.dp),
             shape = RoundedCornerShape(32.dp),
             label = {
                 Text(

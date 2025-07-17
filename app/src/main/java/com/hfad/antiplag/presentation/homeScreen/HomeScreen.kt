@@ -23,9 +23,22 @@ fun HomeScreen() {
     CustomScaffold(
         title = "AntiPlag",
         actions = {
+            Image(
+                painter = painterResource(id = R.drawable.information),
+                contentDescription = null,
+                modifier = Modifier.size(27.dp)
+            )
 
         },
-        navigationIcon = {},
+        navigationIcon = {
+
+            Image(
+                painter = painterResource(id = R.drawable.menu),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+
+            )
+        },
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -42,7 +55,7 @@ fun HomeScreen() {
             Image(
                 painter = painterResource(id = R.drawable.icon),
                 contentDescription = null,
-                modifier = Modifier.size(70.dp)
+                modifier = Modifier.size(86.dp)
             )
             Spacer(modifier = Modifier.weight(1f))
             BottomBar()
