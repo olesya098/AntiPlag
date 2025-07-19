@@ -50,7 +50,14 @@ import com.hfad.antiplag.model.DrawerItem
 import com.hfad.antiplag.navigation.Routes
 import com.hfad.antiplag.presentation.components.dayNightAnimation.DayNight
 import com.hfad.antiplag.ui.theme.blueLite
+import com.hfad.antiplag.ui.theme.coolBlack
+import com.hfad.antiplag.ui.theme.darkGray
+import com.hfad.antiplag.ui.theme.grayDevider
+import com.hfad.antiplag.ui.theme.grayDeviderLite
+import com.hfad.antiplag.ui.theme.liteGray
+import com.hfad.antiplag.ui.theme.white
 import kotlinx.coroutines.launch
+
 @Composable
 fun NavigationDrawer(
     drawerState: DrawerState,
@@ -60,12 +67,12 @@ fun NavigationDrawer(
     onThemeChange: (Boolean) -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ) {
-    var isDarkTheme by remember { mutableStateOf(false) }
-//    MaterialTheme(
-//        colorScheme = if (isDarkTheme) darkColorScheme() else lightColorScheme()
-//    ) {
-        val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
+    // Цвета берутся из текущей темы
+    val drawerBackgroundColor = MaterialTheme.colorScheme.surface
+    val textColor = MaterialTheme.colorScheme.onSurface
+    val dividerColor = if (isDarkTheme) grayDevider else grayDeviderLite
 
     val items = listOf(
         DrawerItem(
@@ -80,156 +87,157 @@ fun NavigationDrawer(
         ),
         DrawerItem(
             icon = R.drawable.error,
-            label = "About",
+            label = stringResource(R.string.about),
             route = Routes.ABOUT
         ),
         DrawerItem(
             icon = R.drawable.login,
-            label = stringResource(R.string.login),
-            route = Routes.LOGIN // Изменил с HOME на LOGIN
+            label = stringResource(R.string.log_out),
+            route = Routes.SIGNUP
         )
     )
 
     var selectedItem by remember { mutableStateOf(items[0]) }
-    val drawerWidth = remember { 0.9f }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         modifier = Modifier.background(MaterialTheme.colorScheme.background),
         gesturesEnabled = drawerState.isOpen,
         drawerContent = {
-                ModalDrawerSheet(
+            ModalDrawerSheet(
+                modifier = Modifier
+                    .fillMaxWidth(0.85f)
+                    .background(drawerBackgroundColor)
+            ) {
+                // Заголовок
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth(drawerWidth)
-                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp), // Уменьшил отступ
+                    contentAlignment = Alignment.Center
                 ) {
+                    Text(
+                        "AntiPlag",
+                        fontSize = 32.sp,
+                        color = textColor,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
+                // Элементы меню
+                items.forEach { item ->
+                    val isSelected = item == selectedItem
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 64.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            "AntiPlag",
-                            fontSize = 32.sp,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                    }
-
-                    items.forEach { item ->
-                        val isSelected = item == selectedItem
-                        Box(
-                            modifier = Modifier
-                                .padding(horizontal = 12.dp, vertical = 4.dp)
-                                .height(47.dp)
-                                .border(
-                                    border = BorderStroke(
-                                        width = 1.dp,
-                                        color = blueLite
-                                    ),
-                                    shape = MaterialTheme.shapes.medium
-                                )
-                                .background(
-                                    color = if (isSelected) MaterialTheme.colorScheme.outline else Color.Transparent,
-                                    shape = MaterialTheme.shapes.medium
-                                )
-                        ) {
-                            NavigationDrawerItem(
-                                label = {
-                                    Text(
-                                        item.label,
-                                        fontSize = 17.sp,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        style = MaterialTheme.typography.bodySmall,
-                                    )
-                                },
-                                selected = isSelected,
-                                onClick = {
-                                    scope.launch {
-                                        drawerState.close()
-                                        selectedItem = item
-                                        // Добавляем навигацию здесь
-                                        navController.navigate(item.route) {
-                                            // Очищаем back stack до стартового экрана
-                                            popUpTo(navController.graph.startDestinationId) {
-                                                saveState = true
-                                            }
-                                            // Предотвращаем множественные копии экрана
-                                            launchSingleTop = true
-                                            // Восстанавливаем состояние
-                                            restoreState = true
-                                        }
-                                    }
-                                },
-                                icon = {
-                                    Icon(
-                                        painter = painterResource(id = item.icon),
-                                        contentDescription = item.label,
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                },
-                                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                                colors = NavigationDrawerItemDefaults.colors(
-                                    selectedContainerColor = Color.Transparent,
-                                    unselectedContainerColor = Color.Transparent
-                                )
+                            .padding(horizontal = 12.dp, vertical = 4.dp)
+                            .height(50.dp)
+                            .border(
+                                border = BorderStroke(
+                                    width = 1.dp,
+                                    color = dividerColor
+                                ),
+                                shape = MaterialTheme.shapes.medium
                             )
-                        }
-                    }
-
-
-                    Divider(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 20.dp),
-                        color = blueLite,
-                        thickness = 1.dp
-                    )
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
+                            .background(
+                                color = if (isSelected) blueLite.copy(alpha = 0.2f)
+                                else Color.Transparent,
+                                shape = MaterialTheme.shapes.medium
+                            )
                     ) {
-                        Text(
-                            text = stringResource(R.string.your_email),
-                            fontSize = 17.sp,
-                            modifier = Modifier.padding(start = 10.dp),
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-                        Text(
-                            text = "example@gmail.com",
-                            fontSize = 17.sp,
-                            modifier = Modifier.padding(start = 10.dp),
-
-                            color = blueLite,
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-
-                    }
-                    Spacer(modifier = Modifier.weight(1f))
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(15.dp),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        DayNight(
-                            modifier = Modifier
-                                .width(40.dp)
-                                .aspectRatio(1f),
-                            isDay = !isDarkTheme, // Параметр, запускающий анимацию
+                        NavigationDrawerItem(
+                            label = {
+                                Text(
+                                    item.label,
+                                    fontSize = 17.sp,
+                                    color = textColor,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            },
+                            selected = isSelected,
                             onClick = {
-                                isDarkTheme = !isDarkTheme // Переключение состояния при клике
-                            }
+                                scope.launch {
+                                    drawerState.close()
+                                    selectedItem = item
+                                    navController.navigate(item.route) {
+                                        popUpTo(navController.graph.startDestinationId) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
+                            },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(id = item.icon),
+                                    contentDescription = item.label,
+                                    tint = textColor,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            },
+                            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                            colors = NavigationDrawerItemDefaults.colors(
+                                selectedContainerColor = Color.Transparent,
+                                unselectedContainerColor = Color.Transparent
+                            )
                         )
                     }
                 }
-            },
-            content = {
-                content(PaddingValues())
+
+                // Разделитель
+                Divider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 20.dp),
+                    color = dividerColor,
+                    thickness = 1.dp
+                )
+
+                // Блок с email
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.your_email),
+                        fontSize = 17.sp,
+                        modifier = Modifier.padding(start = 10.dp),
+                        color = textColor,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Text(
+                        text = "example@gmail.com",
+                        fontSize = 17.sp,
+                        modifier = Modifier.padding(start = 10.dp, top = 4.dp),
+                        color = blueLite,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                // Переключатель темы
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(30.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    DayNight(
+                        modifier = Modifier
+                            .width(40.dp)
+                            .aspectRatio(1f),
+                        isDay = !isDarkTheme,
+                        onClick = {
+                            onThemeChange(!isDarkTheme)
+                        }
+                    )
+                }
             }
-        )
-    //}
+        },
+        content = {
+            content(PaddingValues())
+        }
+    )
 }

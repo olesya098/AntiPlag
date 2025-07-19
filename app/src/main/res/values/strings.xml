@@ -14,4 +14,5 @@
     <string name="upload_a_text_or_document_in_one_click">upload a text or document in one click.</string>
     <string name="for_everyone">For everyone</string>
     <string name="students_teachers_copywriters_lawyers">students, teachers, copywriters, lawyers.</string>
+    <string name="log_out">Log Out</string>
 </resources>

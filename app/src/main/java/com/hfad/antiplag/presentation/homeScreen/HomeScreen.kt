@@ -49,7 +49,9 @@ fun HomeScreen(navController: NavHostController) {
             },
             navController = navController,
             isDarkTheme = isDarkTheme,
-            onThemeChange = { newTheme -> isDarkTheme = newTheme },
+            onThemeChange = { newTheme ->
+                isDarkTheme = newTheme // Обновляем состояние здесь
+            },
         ) { innerPadding ->
             CustomScaffold(
                 title = "AntiPlag",

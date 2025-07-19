@@ -7,6 +7,8 @@ import androidx.navigation.compose.rememberNavController
 import com.hfad.antiplag.presentation.about.AboutScreen
 import com.hfad.antiplag.presentation.historyScreen.HistoryScreen
 import com.hfad.antiplag.presentation.homeScreen.HomeScreen
+import com.hfad.antiplag.presentation.logIn.LogInScreen
+import com.hfad.antiplag.presentation.signUp.SignUpScreen
 import com.hfad.antiplag.presentation.splashScreen.SplashScreen
 
 //Navigation
@@ -15,7 +17,7 @@ fun AppNavigation() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = Routes.SPLASHSCREEN
+        startDestination = Routes.LOGIN
 
         //SplashRoute
 
@@ -51,10 +53,10 @@ fun AppNavigation() {
 
         }
         composable(Routes.LOGIN) {
-
+            LogInScreen(navController)
         }
         composable(Routes.SIGNUP) {
-
+            SignUpScreen(navController)
         }
         composable(Routes.ABOUT) {
             AboutScreen(navController)
