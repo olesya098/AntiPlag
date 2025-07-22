@@ -41,7 +41,7 @@ import kotlinx.coroutines.delay
 fun SplashScreen(navController: NavHostController) {
     LaunchedEffect(Unit) {
         delay(3400L)
-        navController.navigate(Routes.HOME) {
+        navController.navigate(Routes.LOGIN) {
             popUpTo(Routes.SPLASHSCREEN) { inclusive = true } // Удаляем SplashScreen из стека
         }
 //        navController.navigate(HomeRoute) {

@@ -1,5 +1,6 @@
 package com.hfad.antiplag.presentation.homeScreen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -49,8 +50,8 @@ fun HomeScreen(navController: NavHostController) {
             },
             navController = navController,
             isDarkTheme = isDarkTheme,
-            onThemeChange = { newTheme ->
-                isDarkTheme = newTheme // Обновляем состояние здесь
+            onThemeChange = {
+                isDarkTheme = !isDarkTheme
             },
         ) { innerPadding ->
             CustomScaffold(

@@ -64,7 +64,7 @@ fun NavigationDrawer(
     onMenuClick: () -> Unit,
     navController: NavHostController,
     isDarkTheme: Boolean,
-    onThemeChange: (Boolean) -> Unit,
+    onThemeChange: () -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -230,7 +230,7 @@ fun NavigationDrawer(
                             .aspectRatio(1f),
                         isDay = !isDarkTheme,
                         onClick = {
-                            onThemeChange(!isDarkTheme)
+                            onThemeChange()
                         }
                     )
                 }
