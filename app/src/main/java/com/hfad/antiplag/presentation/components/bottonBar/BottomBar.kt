@@ -3,6 +3,8 @@ package com.hfad.antiplag.presentation.components.bottonBar
 import android.R.attr.label
 import android.R.id.message
 import android.util.Log
+import android.util.Log.d
+import android.util.Log.e
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -55,6 +57,7 @@ fun BottomBar() {
                 scope.launch {
                     try {
                         val text = it.readText(context)
+                        Log.d("FilePicker", text)
 
                     } catch (e: Exception) {
                         Log.e("My", "$e Error")

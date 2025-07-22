@@ -47,7 +47,7 @@ fun FilePicker(
         modifier = Modifier
             .size(35.dp)
             .clickable {
-                launcher.launch(supportetTypes.joinToString("|"))
+                launcher.launch("*/*")
             }
     )
 
@@ -56,10 +56,10 @@ fun FilePicker(
 suspend fun Uri.readText(context: Context): String = withContext(Dispatchers.IO) {
     val type = context.contentResolver.getType(this@readText) ?: "text/plain"
     context.contentResolver.openInputStream(this@readText)?.use {
-        when (type) {
-            "application/pdf" -> readPDF(it)
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> readDocx(it)
-            "text/plain" -> readPlaneText(it)
+        when{
+            type == "application/pdf" -> readPDF(it)
+            type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> readDocx(it)
+            type == "text/plain" -> readPlaneText(it)
             else -> throw Exception("unsupported type")
         }
     }?: throw Exception("failed file open")
