@@ -60,7 +60,7 @@ suspend fun Uri.readText(context: Context): String = withContext(Dispatchers.IO)
             type == "application/pdf" -> readPDF(it)
             type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> readDocx(it)
             type == "text/plain" -> readPlaneText(it)
-            else -> throw Exception("unsupported type")
+            else -> throw Exception("unsupported type $type")
         }
     }?: throw Exception("failed file open")
 }
