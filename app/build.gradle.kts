@@ -46,9 +46,9 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.ui.ktx)
 
-    implementation("org.apache.poi:poi-ooxml:5.2.0")
-    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
-
+    implementation("org.apache.poi:poi-ooxml:5.4.1")
+    implementation("org.apache.poi:poi:5.4.1")
+    implementation("com.itextpdf:itextg:5.5.10")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

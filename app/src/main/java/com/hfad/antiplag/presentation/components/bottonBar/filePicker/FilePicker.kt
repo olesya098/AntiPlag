@@ -1,45 +1,36 @@
 package com.hfad.antiplag.presentation.components.bottonBar.filePicker
 
-import android.R.attr.text
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hfad.antiplag.R
-import com.tom_roush.pdfbox.pdmodel.PDDocument
-import com.tom_roush.pdfbox.text.PDFTextStripper
+import com.itextpdf.text.pdf.PdfReader
+import com.itextpdf.text.pdf.parser.PdfTextExtractor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor
 import org.apache.poi.xwpf.usermodel.XWPFDocument
+import java.io.File
 import java.io.InputStream
-import java.net.URI
+
+private const val TAG = "FilePicker"
 
 @Composable
 fun FilePicker(
     onFile: (Uri) -> Unit
 ) {
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
-        it?.let { its ->
-            onFile(its)
-
-        }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let { onFile(it) }
     }
-    val supportetTypes = listOf(
-        "application/pdf",
-        "application/msword",
-        "text/plain",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    )
 
     Image(
         painter = painterResource(id = R.drawable.files),
@@ -50,45 +41,69 @@ fun FilePicker(
                 launcher.launch("*/*")
             }
     )
-
 }
 
 suspend fun Uri.readText(context: Context): String = withContext(Dispatchers.IO) {
-    val type = context.contentResolver.getType(this@readText) ?: "text/plain"
-    context.contentResolver.openInputStream(this@readText)?.use {
-        when{
-            type == "application/pdf" -> readPDF(it)
-            type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> readDocx(it)
-            type == "text/plain" -> readPlaneText(it)
-            else -> throw Exception("unsupported type $type")
+    val contentResolver = context.contentResolver
+    val mimeType = contentResolver.getType(this@readText) ?: "text/plain"
+
+    contentResolver.openInputStream(this@readText)?.use { inputStream ->
+        when (mimeType) {
+            "application/pdf" -> readPDF(inputStream)
+            "application/msword" -> readDocx(inputStream)
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> readDocx(
+                inputStream
+            )
+
+            "text/plain" -> readPlainText(inputStream)
+            else -> throw Exception("Unsupported file type: $mimeType")
         }
-    }?: throw Exception("failed file open")
+    } ?: throw Exception("Failed to open file")
 }
 
-private fun readPlaneText(inputStream: InputStream): String {
-    return inputStream.bufferedReader().use {
-        it.readText()
-    }
+private fun readPlainText(inputStream: InputStream): String {
+    return inputStream.bufferedReader().use { it.readText() }
 }
 
 private fun readPDF(inputStream: InputStream): String {
     return try {
-        PDDocument.load(inputStream).use {
-            val stripper = PDFTextStripper()
-            stripper.getText(it)
+
+        var extractedText = ""
+        val tempFile = File.createTempFile("temp", ".pdf")
+        tempFile.outputStream().use { output ->
+            inputStream.copyTo(output)
+        }
+        val pdfReader = PdfReader(tempFile.absolutePath)
+
+        val n = pdfReader.numberOfPages
+
+        for (i in 0 until n) {
+            extractedText =
+                """
+                 $extractedText${
+                    PdfTextExtractor.getTextFromPage(pdfReader, i + 1).trim { it <= ' ' }
+                }
+                 """.trimIndent()
         }
 
+        pdfReader.close()
+        extractedText
+
     } catch (e: Exception) {
-        throw Exception("Failed to read PDF $e")
+        Log.e(TAG, "Read pdf: ${e.message}")
+        e.toString()
     }
 }
 
-private fun readDocx(inputStream: InputStream): String {
+fun readDocx(inputStream: InputStream): String {
     return try {
-        XWPFDocument(inputStream).use {
-            XWPFWordExtractor(it).text
-        }
+
+        val docx = XWPFDocument(inputStream)
+        val wx = XWPFWordExtractor(docx)
+        wx.text
+
     } catch (e: Exception) {
-        throw Exception("Error $e")
+        Log.e(TAG, "Read docx: ${e.message}")
+        e.toString()
     }
 }
