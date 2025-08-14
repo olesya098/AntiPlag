@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.hfad.antiplag" />
+                  <option name="mobileSdkAppId" value="1:897098036218:android:95bf3b151c43aa688d6a43" />
+                  <option name="projectId" value="asgard-b5e15" />
+                  <option name="projectNumber" value="897098036218" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
