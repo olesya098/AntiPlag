@@ -16,6 +16,7 @@ object Routes {
     const val SPLASHSCREEN = "splashScreen"
     const val LOGIN = "logIn"
     const val SIGNUP = "signUp"
+    const val NOCONNECTION = "noConnection"
 }
 
 fun getTitle(route: String): String {
