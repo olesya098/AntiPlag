@@ -1,6 +1,7 @@
 package com.hfad.antiplag.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -10,11 +11,13 @@ import com.hfad.antiplag.presentation.homeScreen.HomeScreen
 import com.hfad.antiplag.presentation.logIn.LogInScreen
 import com.hfad.antiplag.presentation.signUp.SignUpScreen
 import com.hfad.antiplag.presentation.splashScreen.SplashScreen
+import com.hfad.antiplag.viewModel.PlagiarismCheckViewModel
 
 //Navigation
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    val plagiarismCheckViewModel = viewModel<PlagiarismCheckViewModel>()
     NavHost(
         navController = navController,
         startDestination = Routes.SPLASHSCREEN
@@ -49,7 +52,7 @@ fun AppNavigation() {
 
         }
         composable(Routes.HOME) {
-            HomeScreen(navController)
+            HomeScreen(navController, plagiarismCheckViewModel)
 
         }
         composable(Routes.LOGIN) {

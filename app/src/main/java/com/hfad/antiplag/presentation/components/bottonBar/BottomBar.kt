@@ -7,6 +7,7 @@ import android.util.Log.d
 import android.util.Log.e
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,13 +39,15 @@ import com.hfad.antiplag.presentation.components.bottonBar.filePicker.FilePicker
 import com.hfad.antiplag.presentation.components.bottonBar.filePicker.readText
 import com.hfad.antiplag.ui.theme.blueLite
 import com.hfad.antiplag.ui.theme.liteGray
+import com.hfad.antiplag.viewModel.PlagiarismCheckViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun BottomBar() {
+fun BottomBar(plagiarismCheckViewModel: PlagiarismCheckViewModel) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     var message by remember { mutableStateOf("") }
+    var text by remember { mutableStateOf("") }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -56,7 +59,7 @@ fun BottomBar() {
             onFile = {
                 scope.launch {
                     try {
-                        val text = it.readText(context)
+                        text = it.readText(context)
                         Log.d("FilePicker", text)
 
                     } catch (e: Exception) {
@@ -105,6 +108,7 @@ fun BottomBar() {
                     modifier = Modifier
                         .size(35.dp)
                         .padding(end = 5.dp)
+                        .clickable { plagiarismCheckViewModel.checkText(text = text ) }
                 )
             }
         )

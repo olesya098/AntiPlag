@@ -1,6 +1,7 @@
 package com.hfad.antiplag.data
 
 import android.R.attr.text
+import android.util.Log
 import com.hfad.antiplag.data.core.ClientCore
 import com.hfad.antiplag.model.ReportResponse
 import com.hfad.antiplag.model.SendResponse
@@ -24,6 +25,8 @@ class PlagiatService {
             headers { append(HttpHeaders.Authorization, "X-API-TOKEN: Pb-K3tC_-BPILFkHwmsdKvWrtGVikRsY" ) }
             setBody(TextRequest(language, text))
         }
+        Log.d("PlagiatService", "$response")
+
         return response.body()
     }
     suspend fun statusResponse(id: Int) : StatusResponse{
@@ -32,6 +35,8 @@ class PlagiatService {
         ) {
             headers { append(HttpHeaders.Authorization, "X-API-TOKEN: Pb-K3tC_-BPILFkHwmsdKvWrtGVikRsY" ) }
         }
+        Log.d("PlagiatService", "$statusResponse")
+
         return statusResponse.body()
     }
     suspend fun reportResponse(id: Int) : ReportResponse{
@@ -40,6 +45,7 @@ class PlagiatService {
         ) {
             headers { append(HttpHeaders.Authorization, "X-API-TOKEN: Pb-K3tC_-BPILFkHwmsdKvWrtGVikRsY" ) }
         }
+        Log.d("PlagiatService", "$reportResponse")
         return reportResponse.body()
     }
 

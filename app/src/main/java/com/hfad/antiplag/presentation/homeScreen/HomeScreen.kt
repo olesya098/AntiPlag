@@ -33,15 +33,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.hfad.antiplag.R
+import com.hfad.antiplag.data.PlagiarismCheckManager
 import com.hfad.antiplag.navigation.Routes
 import com.hfad.antiplag.presentation.components.bottonBar.BottomBar
 import com.hfad.antiplag.presentation.components.customScaffold.CustomScaffold
 import com.hfad.antiplag.presentation.components.navigationDrawer.NavigationDrawer
 import com.hfad.antiplag.ui.theme.AntiPlagTheme
+import com.hfad.antiplag.viewModel.PlagiarismCheckViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun HomeScreen(navController: NavHostController, plagiarismCheckViewModel: PlagiarismCheckViewModel) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var isDarkTheme by remember { mutableStateOf(false) }
@@ -132,7 +134,7 @@ fun HomeScreen(navController: NavHostController) {
                         modifier = Modifier.size(86.dp)
                     )
                     Spacer(modifier = Modifier.weight(1f))
-                    BottomBar()
+                    BottomBar(plagiarismCheckViewModel)
 
                 }
             }
