@@ -8,42 +8,65 @@ import com.hfad.antiplag.model.SendResponse
 import com.hfad.antiplag.model.StatusResponse
 import com.hfad.antiplag.model.TextRequest
 import io.ktor.client.call.body
+import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.Parameters
+import io.ktor.http.contentType
 import io.ktor.http.headers
 
 class PlagiatService {
     val client = ClientCore.instance.client
-    suspend fun sendCheckText(language: String = "en", text: String) : SendResponse{
+    suspend fun sendCheckText(language: String = "en", text: String): SendResponse {
         val response = client.post(
             "https://plagiarismcheck.org/api/v1/text"
         ) {
-            headers { append(HttpHeaders.Authorization, "X-API-TOKEN: Pb-K3tC_-BPILFkHwmsdKvWrtGVikRsY" ) }
-            setBody(TextRequest(language, text))
+            headers {
+                append(HttpHeaders.Authorization, "X-API-TOKEN: vRmQNsPJfyzhvYysxZhw7MdsSBWsIjGd")
+                append(HttpHeaders.ContentType, "application/x-www-form-urlencoded")
+            }
+            setBody(FormDataContent(Parameters.build {
+                append("language", language)
+                append("text", text)
+            }))
         }
-        Log.d("PlagiatService", "$response")
+        Log.d("PlagiatService", response.bodyAsText())
 
         return response.body()
     }
-    suspend fun statusResponse(id: Int) : StatusResponse{
+
+    suspend fun statusResponse(id: Int): StatusResponse {
         val statusResponse = client.get(
             "https://plagiarismcheck.org/api/v1/text/$id"
         ) {
-            headers { append(HttpHeaders.Authorization, "X-API-TOKEN: Pb-K3tC_-BPILFkHwmsdKvWrtGVikRsY" ) }
+            headers {
+                append(
+                    HttpHeaders.Authorization,
+                    "X-API-TOKEN: vRmQNsPJfyzhvYysxZhw7MdsSBWsIjGd"
+                )
+            }
         }
         Log.d("PlagiatService", "$statusResponse")
 
         return statusResponse.body()
     }
-    suspend fun reportResponse(id: Int) : ReportResponse{
+
+    suspend fun reportResponse(id: Int): ReportResponse {
         val reportResponse = client.get(
             "https://plagiarismcheck.org/api/v1/text/report/$id"
         ) {
-            headers { append(HttpHeaders.Authorization, "X-API-TOKEN: Pb-K3tC_-BPILFkHwmsdKvWrtGVikRsY" ) }
+            headers {
+                append(
+                    HttpHeaders.Authorization,
+                    "X-API-TOKEN: vRmQNsPJfyzhvYysxZhw7MdsSBWsIjGd"
+                )
+            }
         }
         Log.d("PlagiatService", "$reportResponse")
         return reportResponse.body()

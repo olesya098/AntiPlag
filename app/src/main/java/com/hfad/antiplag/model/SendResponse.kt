@@ -6,7 +6,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SendResponse(
     val success: Boolean,
-    val data: Data
+    val code: Int? = null,
+    val message: String? = null,
+    val data: Data? = null
     )
 
 @Serializable

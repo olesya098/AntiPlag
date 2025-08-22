@@ -23,8 +23,10 @@ import com.hfad.antiplag.presentation.historyScreen.HistoryScreen
 import com.hfad.antiplag.presentation.homeScreen.HomeScreen
 import com.hfad.antiplag.presentation.logIn.LogInScreen
 import com.hfad.antiplag.presentation.noConnection.NoConnection
+import com.hfad.antiplag.presentation.result.ResultScreen
 import com.hfad.antiplag.presentation.signUp.SignUpScreen
 import com.hfad.antiplag.presentation.splashScreen.SplashScreen
+import com.hfad.antiplag.viewModel.LoginSigninViewModel
 import com.hfad.antiplag.viewModel.PlagiarismCheckViewModel
 
 //Navigation
@@ -32,6 +34,7 @@ import com.hfad.antiplag.viewModel.PlagiarismCheckViewModel
 fun AppNavigation() {
     val navController = rememberNavController()
     val plagiarismCheckViewModel = viewModel<PlagiarismCheckViewModel>()
+    val logInSignInViewModel = viewModel<LoginSigninViewModel>()
 
     val context = LocalContext.current
 
@@ -159,10 +162,10 @@ fun AppNavigation() {
 
         }
         composable(Routes.LOGIN) {
-            LogInScreen(navController)
+            LogInScreen(navController, logInSignInViewModel)
         }
         composable(Routes.SIGNUP) {
-            SignUpScreen(navController)
+            SignUpScreen(navController, logInSignInViewModel)
         }
         composable(Routes.ABOUT) {
             AboutScreen(navController)
@@ -173,7 +176,7 @@ fun AppNavigation() {
 
         }
         composable(Routes.RESULTS) {
-
+            ResultScreen(navController,plagiarismCheckViewModel)
         }
         composable(Routes.NOCONNECTION) {
             NoConnection(navController)

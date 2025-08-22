@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -57,6 +59,8 @@ dependencies {
     implementation("com.itextpdf:itextg:5.5.10")
 
     implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
+
+    implementation ("com.google.firebase:firebase-auth-ktx:22.3.1")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -35,16 +35,28 @@ val Typography = Typography(
     )
     */
     //title
+//    bodyMedium = TextStyle(
+//        fontFamily = FontFamily(Font(R.font.sf_pro_display_semibold)),
+//    ),
+//    bodySmall = TextStyle(
+//        fontFamily = FontFamily(Font(R.font.sf_pro_display_medium)),
+//    ),
+//    labelMedium = TextStyle(
+//        fontFamily = FontFamily(Font(R.font.sf_pro_display_medium_italic)),
+//    ),
+//    labelSmall = TextStyle(
+//        fontFamily = FontFamily(Font(R.font.sf_pro_display_light_italic))
+//    ),
     bodyMedium = TextStyle(
-        fontFamily = FontFamily(Font(R.font.sf_pro_display_semibold)),
+        fontFamily = FontFamily(Font(R.font.tttravelsdemibold)),
     ),
     bodySmall = TextStyle(
-        fontFamily = FontFamily(Font(R.font.sf_pro_display_medium)),
+        fontFamily = FontFamily(Font(R.font.tttravelsmedium)),
     ),
     labelMedium = TextStyle(
-        fontFamily = FontFamily(Font(R.font.sf_pro_display_medium_italic)),
+        fontFamily = FontFamily(Font(R.font.tttravelsmediumitalic)),
     ),
     labelSmall = TextStyle(
-        fontFamily = FontFamily(Font(R.font.sf_pro_display_light_italic))
+        fontFamily = FontFamily(Font(R.font.tttravelsextralightitalic))
     )
 )

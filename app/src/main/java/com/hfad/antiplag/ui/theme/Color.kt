@@ -11,6 +11,7 @@ val grayNavigationLite = Color(0xCDD2D1D1)
 
 //DarkTheme
 val coolBlack = Color(0XFF151922)
+val message = Color(0XFFF6F6F6)
 val darkGray = Color(0XFF3C3C3C)
 val grayDevider = Color(0xFF888888)
 val grayNavigation = Color(0xFF494949)

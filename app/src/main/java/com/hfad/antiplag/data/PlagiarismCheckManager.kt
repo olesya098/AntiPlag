@@ -17,8 +17,8 @@ class PlagiarismCheckManager(
         try {
             val sendResponse =
                 plagiatService.sendCheckText(text = text)//отправка текста на проверку
-            val textId = sendResponse.data.text.id
-            _state.value = PlagiatCheckState.WaitingStatus(textId)
+            val textId = sendResponse.data?.text?.id
+            textId?.let { _state.value = PlagiatCheckState.WaitingStatus(it) }
 
             var statusResponse: StatusResponse? = null
             var count = 0
@@ -26,19 +26,21 @@ class PlagiarismCheckManager(
             do {
                 delay(10000L)
                 count++
-                statusResponse = plagiatService.statusResponse(textId)
-                _state.value = PlagiatCheckState.CheckingStatus(
-                    textId, progress = (count * 100 / maxCount).coerceAtMost(100)
-                )
+                statusResponse = textId?.let { plagiatService.statusResponse(it) }
+                textId?.let {
+                    _state.value = PlagiatCheckState.CheckingStatus(
+                        it, progress = (count * 100 / maxCount).coerceAtMost(100)
+                    )
+                }
 
-            } while (statusResponse.data.state != 5 && count < maxCount)
-            if (statusResponse.data.state != 5) {
+            } while (statusResponse?.data?.state != 5 && count < maxCount)
+            if (statusResponse?.data?.state != 5) {
                 _state.value = PlagiatCheckState.Error(" Timeout, Waiting Plagiarism is over")
                 return
             }
 
-            val report = plagiatService.reportResponse(textId)
-            _state.value = PlagiatCheckState.Success(report)
+            val report = textId?.let { plagiatService.reportResponse(it) }
+            report?.let { _state.value = PlagiatCheckState.Success(it) }
 
         } catch (e: Exception) {
             _state.value = PlagiatCheckState.Error(e.message.toString())

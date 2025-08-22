@@ -1,5 +1,6 @@
 package com.hfad.antiplag.presentation.logIn
 
+import android.R.attr.password
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,12 +30,28 @@ import com.hfad.antiplag.R
 import com.hfad.antiplag.navigation.Routes
 import com.hfad.antiplag.presentation.components.customButton.CustomButton
 import com.hfad.antiplag.presentation.components.customTextField.CustomTextField
+import com.hfad.antiplag.presentation.components.dialog.Dialog
 import com.hfad.antiplag.ui.theme.blueLite
+import com.hfad.antiplag.viewModel.LoginSigninViewModel
 
 @Composable
-fun LogInScreen(navController: NavController) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+fun LogInScreen(navController: NavController, viewModel: LoginSigninViewModel) {
+
+    val email by viewModel.email.collectAsState()
+    val password by viewModel.password.collectAsState()
+    val showDialog by viewModel.showDialog.collectAsState()
+    val dialogMessage by viewModel.dialogMessage.collectAsState()
+
+
+    if (showDialog) {
+        Dialog(
+            message = dialogMessage,
+            onDismiss = {
+                viewModel.dismissDialog()
+                navController.navigate(Routes.HOME)
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -68,22 +86,27 @@ fun LogInScreen(navController: NavController) {
             CustomTextField(
                 label = "Email",
                 value = email,
-                onvalChange = { email = it }
+                onvalChange = { viewModel.updateEmail(it) }
             )
 
             CustomTextField(
                 label = "Password",
                 value = password,
-                onvalChange = { password = it }
+                onvalChange = { viewModel.updatePassword(it) }
             )
         }
 
         Spacer(modifier = Modifier.padding(16.dp))
 
         CustomButton(
-            title = "Next",
+            title = "LogIn",
             onClick = {
-                navController.navigate(Routes.HOME)
+                viewModel.logIn { success ->
+                    if (success){
+                        viewModel.showStatusDialog("Пользователь зашёл в систему")
+                    }
+
+                }
 
             },
             modifier = Modifier.padding()
@@ -143,7 +166,7 @@ fun LogInScreen(navController: NavController) {
                     .clickable {
                         navController.navigate(Routes.SIGNUP)
 
-                    } ,
+                    },
                 color = blueLite,
                 style = MaterialTheme.typography.bodySmall
             )
