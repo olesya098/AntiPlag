@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,10 +28,11 @@ class LoginSigninViewModel : ViewModel() {
     val dialogMessage: StateFlow<String> = _dialogMessage.asStateFlow()
 
 
-    fun updateEmail(email: String){
+    fun updateEmail(email: String) {
         _email.value = email
     }
-    fun updatePassword(password: String){
+
+    fun updatePassword(password: String) {
         _password.value = password
     }
 
@@ -39,11 +41,12 @@ class LoginSigninViewModel : ViewModel() {
         _dialogMessage.value = message
         _showDialog.value = true
     }
+
     fun dismissDialog() {
         _showDialog.value = false
     }
 
-    fun logIn(onResult: (Boolean) -> Unit){
+    fun logIn(onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             auth.signInWithEmailAndPassword(_email.value, _password.value)
                 .addOnCompleteListener { task ->
@@ -51,13 +54,19 @@ class LoginSigninViewModel : ViewModel() {
                     if (task.isSuccessful) {
                         Log.d("MyLog", "SignInUserWithEmail: successful")
                         onResult(true)
-                    }else{
+                    } else {
                         Log.d("MyLog", "SignInUserWithEmail: Failed")
                     }
 
                 }
         }
     }
+
+    fun clearFields() {
+        _email.value = ""
+        _password.value = ""
+    }
+
 
     fun signIn(onResult: (Boolean) -> Unit){
         viewModelScope.launch {
@@ -81,8 +90,27 @@ class LoginSigninViewModel : ViewModel() {
         }
     }
 
+    fun signDelete(onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val credential = EmailAuthProvider.getCredential(_email.value, _password.value)
 
-
+            auth.currentUser?.reauthenticate(credential)?.addOnCompleteListener { reauthTask ->
+                if (reauthTask.isSuccessful) {
+                    auth.currentUser?.delete()?.addOnCompleteListener { deleteTask ->
+                        if (deleteTask.isSuccessful) {
+                            Log.d("MyLog", "Deleted")
+                            onResult(true)
+                        } else {
+                            Log.d("MyLog", "Failed")
+                            onResult(false)
+                        }
+                    }
+                } else {
+                    onResult(false)
+                }
+            }
+        }
+    }
 
 
 }

@@ -15,4 +15,5 @@
     <string name="for_everyone">Для всех</string>
     <string name="students_teachers_copywriters_lawyers">студенты, преподаватели, копирайтеры, юристы.</string>
     <string name="log_out">Выйти из аккаунта</string>
+    <string name="delete_an_account">Удалить аккаунт</string>
 </resources>

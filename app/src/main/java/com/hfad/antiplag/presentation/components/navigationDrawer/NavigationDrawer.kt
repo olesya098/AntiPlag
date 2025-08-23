@@ -44,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.hfad.antiplag.R
 import com.hfad.antiplag.model.DrawerItem
@@ -57,6 +58,7 @@ import com.hfad.antiplag.ui.theme.grayDeviderLite
 import com.hfad.antiplag.ui.theme.liteGray
 import com.hfad.antiplag.ui.theme.white
 import kotlinx.coroutines.launch
+import org.apache.poi.hssf.usermodel.HeaderFooter.fontSize
 
 @Composable
 fun NavigationDrawer(
@@ -65,8 +67,12 @@ fun NavigationDrawer(
     navController: NavHostController,
     isDarkTheme: Boolean,
     onThemeChange: () -> Unit,
-    content: @Composable (PaddingValues) -> Unit
-) {
+    onOut: () -> Unit,
+    onDelete: () -> Unit,
+    email: String,
+    content: @Composable (PaddingValues) -> Unit,
+
+    ) {
     val scope = rememberCoroutineScope()
 
     // Цвета берутся из текущей темы
@@ -93,7 +99,12 @@ fun NavigationDrawer(
         DrawerItem(
             icon = R.drawable.login,
             label = stringResource(R.string.log_out),
-            route = Routes.SIGNUP
+            route = Routes.LOGOUT
+        ),
+        DrawerItem(
+            icon = R.drawable.rubish,
+            label = stringResource(R.string.delete_an_account),
+            route = Routes.DELETE
         )
     )
 
@@ -158,12 +169,23 @@ fun NavigationDrawer(
                                 scope.launch {
                                     drawerState.close()
                                     selectedItem = item
-                                    navController.navigate(item.route) {
-                                        popUpTo(navController.graph.startDestinationId) {
-                                            saveState = true
+
+                                    when (item.route) {
+                                        Routes.LOGOUT -> {
+                                            onOut()
                                         }
-                                        launchSingleTop = true
-                                        restoreState = true
+                                        Routes.DELETE -> {
+                                            onDelete()
+                                        }
+                                        else -> {
+                                            navController.navigate(item.route) {
+                                                popUpTo(navController.graph.startDestinationId) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
+                                        }
                                     }
                                 }
                             },
@@ -207,7 +229,7 @@ fun NavigationDrawer(
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     Text(
-                        text = "example@gmail.com",
+                        text = email,
                         fontSize = 17.sp,
                         modifier = Modifier.padding(start = 10.dp, top = 4.dp),
                         color = blueLite,

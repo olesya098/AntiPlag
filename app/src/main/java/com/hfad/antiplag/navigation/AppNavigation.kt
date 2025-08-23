@@ -7,7 +7,6 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -17,6 +16,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.hfad.antiplag.data.network.NetworkFun
 import com.hfad.antiplag.presentation.about.AboutScreen
 import com.hfad.antiplag.presentation.historyScreen.HistoryScreen
@@ -34,7 +35,7 @@ import com.hfad.antiplag.viewModel.PlagiarismCheckViewModel
 fun AppNavigation() {
     val navController = rememberNavController()
     val plagiarismCheckViewModel = viewModel<PlagiarismCheckViewModel>()
-    val logInSignInViewModel = viewModel<LoginSigninViewModel>()
+    val logInSigninViewModel = viewModel<LoginSigninViewModel>()
 
     val context = LocalContext.current
 
@@ -123,14 +124,17 @@ fun AppNavigation() {
 
         onDispose { connectivityManager.unregisterNetworkCallback(networkCallback) }
     }
+    fun isUserLoggedIn(): Boolean {
+        return Firebase.auth.currentUser != null
+    }
+
+
 
     NavHost(
         navController = navController,
         startDestination = Routes.SPLASHSCREEN
-
-        //SplashRoute
-
     ) {
+
 //        composable <SplashRoute>{
 //            SplashScreen(navController)
 //        }
@@ -158,14 +162,14 @@ fun AppNavigation() {
 
         }
         composable(Routes.HOME) {
-            HomeScreen(navController, plagiarismCheckViewModel)
+            HomeScreen(navController, plagiarismCheckViewModel, logInSigninViewModel)
 
         }
         composable(Routes.LOGIN) {
-            LogInScreen(navController, logInSignInViewModel)
+            LogInScreen(navController, logInSigninViewModel)
         }
         composable(Routes.SIGNUP) {
-            SignUpScreen(navController, logInSignInViewModel)
+            SignUpScreen(navController, logInSigninViewModel)
         }
         composable(Routes.ABOUT) {
             AboutScreen(navController)

@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun Dialog(message: String, onDismiss: () -> Unit, ) {
+fun Dialog(message: String, onDismiss: () -> Unit,  ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Уведомление") },

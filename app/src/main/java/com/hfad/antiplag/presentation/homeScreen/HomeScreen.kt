@@ -4,7 +4,6 @@ import android.Manifest
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,7 +33,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.hfad.antiplag.R
-import com.hfad.antiplag.data.PlagiarismCheckManager
 import com.hfad.antiplag.model.PlagiatCheckState
 import com.hfad.antiplag.navigation.Routes
 import com.hfad.antiplag.presentation.components.bottonBar.BottomBar
@@ -42,14 +40,18 @@ import com.hfad.antiplag.presentation.components.customScaffold.CustomScaffold
 import com.hfad.antiplag.presentation.components.message.Message
 import com.hfad.antiplag.presentation.components.navigationDrawer.NavigationDrawer
 import com.hfad.antiplag.ui.theme.AntiPlagTheme
+import com.hfad.antiplag.viewModel.LoginSigninViewModel
 import com.hfad.antiplag.viewModel.PlagiarismCheckViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    plagiarismCheckViewModel: PlagiarismCheckViewModel
+    plagiarismCheckViewModel: PlagiarismCheckViewModel,
+    viewModel: LoginSigninViewModel,
 ) {
+
+    val email by viewModel.email.collectAsState()
 
     val state = plagiarismCheckViewModel.checkState.collectAsState()
 
@@ -95,6 +97,21 @@ fun HomeScreen(
             onThemeChange = {
                 isDarkTheme = !isDarkTheme
             },
+            onOut = {
+                viewModel.signOut()
+            },
+            email = email,
+            onDelete = {
+                viewModel.signDelete { success ->
+                    if (success){
+                        viewModel.showStatusDialog("Аккаунт удален")
+                        navController.navigate(Routes.LOGIN)
+                    }
+
+
+                }
+            }
+
         ) { innerPadding ->
             CustomScaffold(
                 title = "AntiPlag",
@@ -164,6 +181,7 @@ fun HomeScreen(
                                 text = "Текст обрабатывается ${(state.value as PlagiatCheckState.CheckingStatus).progress}"
                             )
                         }
+
                         is PlagiatCheckState.Error -> TODO()
                         is PlagiatCheckState.Success -> {
 
@@ -172,12 +190,13 @@ fun HomeScreen(
                             )
                             Message(
                                 text = "Узнать результат",
-                                modifier = Modifier.clickable{
+                                modifier = Modifier.clickable {
                                     navController.navigate(Routes.RESULTS)
                                 }
                             )
 
                         }
+
                         is PlagiatCheckState.WaitingStatus -> TODO()
                     }
 

@@ -16,6 +16,8 @@ object Routes {
     const val SPLASHSCREEN = "splashScreen"
     const val LOGIN = "logIn"
     const val SIGNUP = "signUp"
+    const val LOGOUT = "logOut"
+    const val DELETE = "delete"
     const val NOCONNECTION = "noConnection"
 }
 
