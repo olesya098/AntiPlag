@@ -70,8 +70,8 @@ fun NavigationDrawer(
     onOut: () -> Unit,
     onDelete: () -> Unit,
     email: String,
+    onNavigateToLogin: () -> Unit, // Добавьте этот параметр
     content: @Composable (PaddingValues) -> Unit,
-
     ) {
     val scope = rememberCoroutineScope()
 
@@ -173,9 +173,11 @@ fun NavigationDrawer(
                                     when (item.route) {
                                         Routes.LOGOUT -> {
                                             onOut()
+                                            onNavigateToLogin() // Добавьте переход на логин
                                         }
                                         Routes.DELETE -> {
                                             onDelete()
+                                            onNavigateToLogin() // И для удаления аккаунта тоже
                                         }
                                         else -> {
                                             navController.navigate(item.route) {

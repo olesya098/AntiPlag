@@ -104,11 +104,17 @@ fun HomeScreen(
             onDelete = {
                 viewModel.signDelete { success ->
                     if (success){
-                        viewModel.showStatusDialog("Аккаунт удален")
-                        navController.navigate(Routes.LOGIN)
+                        Log.d("DELETE ACCOUNT", "account deleted")
                     }
 
 
+                }
+            },
+            onNavigateToLogin = {
+                navController.navigate(Routes.LOGIN) {
+                    popUpTo(navController.graph.startDestinationId) {
+                        inclusive = true
+                    }
                 }
             }
 

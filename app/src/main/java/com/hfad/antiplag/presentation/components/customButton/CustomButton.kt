@@ -42,7 +42,7 @@ fun CustomButton(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Next",
+            text = title,
             fontSize = 17.sp,
             modifier = Modifier.padding(16.dp),
             style = MaterialTheme.typography.bodyMedium,

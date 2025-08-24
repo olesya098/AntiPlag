@@ -19,7 +19,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -29,6 +32,7 @@ import com.hfad.antiplag.presentation.components.customButton.CustomButton
 import com.hfad.antiplag.presentation.components.customTextField.CustomTextField
 import com.hfad.antiplag.presentation.components.dialog.Dialog
 import com.hfad.antiplag.ui.theme.blueLite
+import com.hfad.antiplag.ui.theme.red
 import com.hfad.antiplag.viewModel.LoginSigninViewModel
 
 @Composable
@@ -38,7 +42,7 @@ fun LogInScreen(navController: NavController, viewModel: LoginSigninViewModel) {
     val password by viewModel.password.collectAsState()
     val showDialog by viewModel.showDialog.collectAsState()
     val dialogMessage by viewModel.dialogMessage.collectAsState()
-
+    val errorMessage by viewModel.errorMessage.collectAsState()
     LaunchedEffect(Unit) {
         viewModel.clearFields()
     }
@@ -56,26 +60,35 @@ fun LogInScreen(navController: NavController, viewModel: LoginSigninViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 32.dp, end = 32.dp, top = 80.dp),
+            .padding(start = 26.dp, end = 26.dp, top = 80.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(bottom = 40.dp)
+            modifier = Modifier.padding(bottom = 15.dp)
         ) {
             Text(
-                text = "Log In",
+                text = stringResource(R.string.log_in),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 36.sp
             )
-            Spacer(modifier = Modifier.padding(24.dp))
+            Spacer(modifier = Modifier.padding(15.dp))
             Text(
-                text = "Please log in to your account",
+                text = stringResource(R.string.please_log_in_to_your_account),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center,
                 fontSize = 17.sp
+            )
+            Spacer(modifier = Modifier.padding(7.dp))
+            Text(
+                text = errorMessage,
+                style = MaterialTheme.typography.bodySmall,
+                color = red,
+                textAlign = TextAlign.Center,
+                fontSize = 13.sp
             )
         }
 
@@ -90,7 +103,7 @@ fun LogInScreen(navController: NavController, viewModel: LoginSigninViewModel) {
             )
 
             CustomTextField(
-                label = "Password",
+                label = stringResource(R.string.password),
                 value = password,
                 onvalChange = { viewModel.updatePassword(it) }
             )
@@ -99,7 +112,7 @@ fun LogInScreen(navController: NavController, viewModel: LoginSigninViewModel) {
         Spacer(modifier = Modifier.padding(16.dp))
 
         CustomButton(
-            title = "LogIn",
+            title = stringResource(R.string.log_in),
             onClick = {
                 viewModel.logIn { success ->
                     if (success){
@@ -152,15 +165,17 @@ fun LogInScreen(navController: NavController, viewModel: LoginSigninViewModel) {
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Is this your first time?",
-                fontSize = 17.sp,
+                text = stringResource(R.string.is_this_your_first_time),
+                fontSize = 15.sp,
                 modifier = Modifier.padding(bottom = 32.dp),
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.bodySmall
             )
+            Spacer(modifier = Modifier.padding(1.dp))
+
             Text(
-                text = " Signup",
-                fontSize = 17.sp,
+                text = stringResource(R.string.sign_up),
+                fontSize = 15.sp,
                 modifier = Modifier
                     .padding(bottom = 32.dp)
                     .clickable {

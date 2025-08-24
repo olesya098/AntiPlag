@@ -16,4 +16,12 @@
     <string name="students_teachers_copywriters_lawyers">студенты, преподаватели, копирайтеры, юристы.</string>
     <string name="log_out">Выйти из аккаунта</string>
     <string name="delete_an_account">Удалить аккаунт</string>
+    <string name="log_in">Авторизация</string>
+    <string name="please_log_in_to_your_account">Пожалуйста, войдите в свою учетную запись</string>
+    <string name="is_this_your_first_time">Вы здесь впервые?</string>
+    <string name="password">Пароль</string>
+    <string name="sign_up">Регистрация</string>
+    <string name="please_sign_up_to_your_account">Пожалуйста, зарегистрируйте свою учетную запись</string>
+    <string name="sign_in_with_google">Войдите с помощью Google</string>
+    <string name="already_registered">Уже зарегистрированы?</string>
 </resources>
