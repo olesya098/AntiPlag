@@ -17,6 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,6 +33,7 @@ import com.hfad.antiplag.R
 import com.hfad.antiplag.navigation.Routes
 import com.hfad.antiplag.presentation.components.customButton.CustomButton
 import com.hfad.antiplag.presentation.components.customTextField.CustomTextField
+import com.hfad.antiplag.presentation.components.customTextFieldPassword.CustomTextFieldPassword
 import com.hfad.antiplag.presentation.components.dialog.Dialog
 import com.hfad.antiplag.ui.theme.blueLite
 import com.hfad.antiplag.ui.theme.red
@@ -42,6 +46,7 @@ fun SignUpScreen(navController: NavController, viewModel: LoginSigninViewModel) 
     val showDialog by viewModel.showDialog.collectAsState()
     val dialogMessage by viewModel.dialogMessage.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    var isPasswordVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.clearFields()
@@ -102,10 +107,13 @@ fun SignUpScreen(navController: NavController, viewModel: LoginSigninViewModel) 
                 onvalChange = { viewModel.updateEmail(it) }
             )
 
-            CustomTextField(
+            CustomTextFieldPassword(
                 label = stringResource(R.string.password),
                 value = password,
-                onvalChange = { viewModel.updatePassword(it) }
+                onvalChange = { viewModel.updatePassword(it) },
+                visible = isPasswordVisible,
+                onVisibilityChange = { isPasswordVisible = it }
+
             )
         }
 

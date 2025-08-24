@@ -1,5 +1,6 @@
 package com.hfad.antiplag.presentation.logIn
 
+import android.R.attr.visible
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,6 +34,7 @@ import com.hfad.antiplag.R
 import com.hfad.antiplag.navigation.Routes
 import com.hfad.antiplag.presentation.components.customButton.CustomButton
 import com.hfad.antiplag.presentation.components.customTextField.CustomTextField
+import com.hfad.antiplag.presentation.components.customTextFieldPassword.CustomTextFieldPassword
 import com.hfad.antiplag.presentation.components.dialog.Dialog
 import com.hfad.antiplag.ui.theme.blueLite
 import com.hfad.antiplag.ui.theme.red
@@ -42,6 +47,8 @@ fun LogInScreen(navController: NavController, viewModel: LoginSigninViewModel) {
     val password by viewModel.password.collectAsState()
     val showDialog by viewModel.showDialog.collectAsState()
     val dialogMessage by viewModel.dialogMessage.collectAsState()
+    var isPasswordVisible by remember { mutableStateOf(false) }
+
     val errorMessage by viewModel.errorMessage.collectAsState()
     LaunchedEffect(Unit) {
         viewModel.clearFields()
@@ -102,10 +109,14 @@ fun LogInScreen(navController: NavController, viewModel: LoginSigninViewModel) {
                 onvalChange = { viewModel.updateEmail(it) }
             )
 
-            CustomTextField(
+
+            CustomTextFieldPassword(
                 label = stringResource(R.string.password),
                 value = password,
-                onvalChange = { viewModel.updatePassword(it) }
+                onvalChange = { viewModel.updatePassword(it) },
+                visible = isPasswordVisible,
+                onVisibilityChange = { isPasswordVisible = it }
+
             )
         }
 
