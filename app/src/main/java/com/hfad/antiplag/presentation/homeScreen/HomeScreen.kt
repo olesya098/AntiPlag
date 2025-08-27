@@ -188,7 +188,11 @@ fun HomeScreen(
                             )
                         }
 
-                        is PlagiatCheckState.Error -> TODO()
+                        is PlagiatCheckState.Error -> {
+                            Message(
+                                text = "Error"
+                            )
+                        }
                         is PlagiatCheckState.Success -> {
 
                             plagiarismCheckViewModel.updateReport(
@@ -203,7 +207,11 @@ fun HomeScreen(
 
                         }
 
-                        is PlagiatCheckState.WaitingStatus -> TODO()
+                        is PlagiatCheckState.WaitingStatus -> {
+                            Message(
+                                text = "..."
+                            )
+                        }
                     }
 
                     BottomBar(plagiarismCheckViewModel)

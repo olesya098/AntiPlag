@@ -20,15 +20,16 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Parameters
 import io.ktor.http.contentType
 import io.ktor.http.headers
-
+const val TOKEN = "WsxW8xX6PpMupTU7tvsLYws-iEsw6iwt"
 class PlagiatService {
+
     val client = ClientCore.instance.client
     suspend fun sendCheckText(language: String = "en", text: String): SendResponse {
         val response = client.post(
             "https://plagiarismcheck.org/api/v1/text"
         ) {
             headers {
-                append(HttpHeaders.Authorization, "X-API-TOKEN: vRmQNsPJfyzhvYysxZhw7MdsSBWsIjGd")
+                append("X-API-TOKEN", TOKEN)
                 append(HttpHeaders.ContentType, "application/x-www-form-urlencoded")
             }
             setBody(FormDataContent(Parameters.build {
@@ -36,7 +37,7 @@ class PlagiatService {
                 append("text", text)
             }))
         }
-        Log.d("PlagiatService", response.bodyAsText())
+        Log.d("PlagiatService Send", response.bodyAsText())
 
         return response.body()
     }
@@ -46,13 +47,11 @@ class PlagiatService {
             "https://plagiarismcheck.org/api/v1/text/$id"
         ) {
             headers {
-                append(
-                    HttpHeaders.Authorization,
-                    "X-API-TOKEN: vRmQNsPJfyzhvYysxZhw7MdsSBWsIjGd"
-                )
+                append("X-API-TOKEN",TOKEN)
+
             }
         }
-        Log.d("PlagiatService", "$statusResponse")
+        Log.d("PlagiatService Status", "$statusResponse")
 
         return statusResponse.body()
     }
@@ -62,13 +61,11 @@ class PlagiatService {
             "https://plagiarismcheck.org/api/v1/text/report/$id"
         ) {
             headers {
-                append(
-                    HttpHeaders.Authorization,
-                    "X-API-TOKEN: vRmQNsPJfyzhvYysxZhw7MdsSBWsIjGd"
-                )
+                append("X-API-TOKEN", TOKEN)
+
             }
         }
-        Log.d("PlagiatService", "$reportResponse")
+        Log.d("PlagiatService Reports", reportResponse.bodyAsText())
         return reportResponse.body()
     }
 
