@@ -9,14 +9,18 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,7 +40,6 @@ import com.hfad.antiplag.R
 import com.hfad.antiplag.model.PlagiatCheckState
 import com.hfad.antiplag.navigation.Routes
 import com.hfad.antiplag.presentation.components.bottonBar.BottomBar
-import com.hfad.antiplag.presentation.components.customScaffold.CustomScaffold
 import com.hfad.antiplag.presentation.components.message.Message
 import com.hfad.antiplag.presentation.components.navigationDrawer.NavigationDrawer
 import com.hfad.antiplag.ui.theme.AntiPlagTheme
@@ -44,6 +47,7 @@ import com.hfad.antiplag.viewModel.LoginSigninViewModel
 import com.hfad.antiplag.viewModel.PlagiarismCheckViewModel
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
@@ -52,13 +56,12 @@ fun HomeScreen(
 ) {
 
     val email by viewModel.email.collectAsState()
-
     val state = plagiarismCheckViewModel.checkState.collectAsState()
-
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var isDarkTheme by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
         onResult = { permissions ->
@@ -70,10 +73,9 @@ fun HomeScreen(
                     Toast.makeText(context, "permissions is noooo", Toast.LENGTH_SHORT).show()
                 }
             }
-
-
         }
     )
+
     LaunchedEffect(Unit) {
         launcher.launch(
             arrayOf(
@@ -106,8 +108,6 @@ fun HomeScreen(
                     if (success){
                         Log.d("DELETE ACCOUNT", "account deleted")
                     }
-
-
                 }
             },
             onNavigateToLogin = {
@@ -117,108 +117,139 @@ fun HomeScreen(
                     }
                 }
             }
-
         ) { innerPadding ->
-            CustomScaffold(
-                title = "AntiPlag",
-                actions = {
-                    Image(
-                        painter = painterResource(id = R.drawable.information),
-                        contentDescription = "About",
+            Scaffold(
+                topBar = {
+                    Box(
                         modifier = Modifier
-                            .size(27.dp)
-                            .clickable {
-                                navController.navigate(Routes.ABOUT)
-                                //   navController.navigate(AboutRoute)
-                            }
-                    )
-                },
-                navigationIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.menu),
-                        contentDescription = "Menu",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clickable {
-                                scope.launch {
-                                    if (drawerState.isClosed) drawerState.open()
-                                    else drawerState.close()
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.background)
+                            .padding(innerPadding)
+                    ) {
+                        // TopBar content
+                        androidx.compose.material3.TopAppBar(
+                            title = {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    androidx.compose.material3.Text(
+                                        "AntiPlag",
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
                                 }
-                            }
-                    )
-                }
+                            },
+                            navigationIcon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.menu),
+                                    contentDescription = "Menu",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clickable {
+                                            scope.launch {
+                                                if (drawerState.isClosed) drawerState.open()
+                                                else drawerState.close()
+                                            }
+                                        }
+                                )
+                            },
+                            actions = {
+                                Image(
+                                    painter = painterResource(id = R.drawable.information),
+                                    contentDescription = "About",
+                                    modifier = Modifier
+                                        .size(27.dp)
+                                        .clickable {
+                                            navController.navigate(Routes.ABOUT)
+                                        }
+                                )
+                            },
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = MaterialTheme.colorScheme.background
+                            )
+                        )
+                    }
+                },
+                bottomBar = {
+                    // BottomBar всегда прикреплен к низу
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 20.dp)
+                            .background(MaterialTheme.colorScheme.background)
+                    ) {
+                        BottomBar(plagiarismCheckViewModel)
+                    }
+                },
+                containerColor = MaterialTheme.colorScheme.background
             ) { scaffoldPadding ->
-                Column(
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background)
                         .padding(scaffoldPadding)
-                        .padding(innerPadding),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                        .background(MaterialTheme.colorScheme.background)
                 ) {
-                    when (state.value) {
-                        PlagiatCheckState.Idle -> {
-                            Spacer(modifier = Modifier.weight(1f))
+                    // Основной контент - центрированный
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.Center),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        when (state.value) {
+                            PlagiatCheckState.Idle -> {
+                                Image(
+                                    painter = painterResource(id = R.drawable.icon),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(86.dp)
+                                )
+                            }
 
-                            Image(
-                                painter = painterResource(id = R.drawable.icon),
-                                contentDescription = null,
-                                modifier = Modifier.size(86.dp)
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
-
-                        PlagiatCheckState.SendText -> {
-                            Message(
-                                text = "Текст отправлен"
-
-                            )
-                            Message(
-                                text = "Текст в обработке"
-
-                            )
-
-                        }
-
-                        is PlagiatCheckState.CheckingStatus -> {
-                            Message(
-                                text = "Текст обрабатывается ${(state.value as PlagiatCheckState.CheckingStatus).progress}"
-                            )
-                        }
-
-                        is PlagiatCheckState.Error -> {
-                            Message(
-                                text = "Error"
-                            )
-                        }
-                        is PlagiatCheckState.Success -> {
-
-                            plagiarismCheckViewModel.updateReport(
-                                (state.value as PlagiatCheckState.Success).report
-                            )
-                            Message(
-                                text = "Узнать результат",
-                                modifier = Modifier.clickable {
-                                    navController.navigate(Routes.RESULTS)
+                            PlagiatCheckState.SendText -> {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Message(
+                                        text = "Текст отправлен"
+                                    )
                                 }
-                            )
+                            }
 
-                        }
+                            is PlagiatCheckState.CheckingStatus -> {
+                                Message(
+                                    text = "Текст обрабатывается ${(state.value as PlagiatCheckState.CheckingStatus).progress}"
+                                )
+                            }
 
-                        is PlagiatCheckState.WaitingStatus -> {
-                            Message(
-                                text = "..."
-                            )
+                            is PlagiatCheckState.Error -> {
+                                Message(
+                                    text = "Error  ${(state.value as PlagiatCheckState.Error).message}"
+                                )
+                            }
+
+                            is PlagiatCheckState.Success -> {
+                                plagiarismCheckViewModel.updateReport(
+                                    (state.value as PlagiatCheckState.Success).report
+                                )
+                                Message(
+                                    text = "Узнать результат",
+                                    modifier = Modifier.clickable {
+                                        navController.navigate(Routes.RESULTS)
+                                    }
+                                )
+                            }
+
+                            is PlagiatCheckState.WaitingStatus -> {
+                                Message(
+                                    text = "..."
+                                )
+                            }
                         }
                     }
-
-                    BottomBar(plagiarismCheckViewModel)
-
                 }
             }
         }
     }
 }
-

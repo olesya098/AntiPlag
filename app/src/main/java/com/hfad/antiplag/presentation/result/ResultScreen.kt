@@ -1,5 +1,7 @@
 package com.hfad.antiplag.presentation.result
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,9 +23,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,6 +35,7 @@ import androidx.navigation.NavController
 import com.hfad.antiplag.R
 import com.hfad.antiplag.navigation.Routes
 import com.hfad.antiplag.presentation.components.customScaffold.CustomScaffold
+import com.hfad.antiplag.ui.theme.AntiPlagTheme
 import com.hfad.antiplag.viewModel.PlagiarismCheckViewModel
 import org.slf4j.helpers.Util.report
 
@@ -38,6 +43,7 @@ import org.slf4j.helpers.Util.report
 fun ResultScreen(navController: NavController, plagiarismCheckViewModel: PlagiarismCheckViewModel) {
     val reportState = plagiarismCheckViewModel.report.collectAsState()
 
+    val context = LocalContext.current
     val matched = (reportState.value?.data?.report?.percent?.toInt() ?: 0).coerceIn(0, 100)
     val original = (100 - matched).coerceIn(0, 100)
 
@@ -79,7 +85,9 @@ fun ResultScreen(navController: NavController, plagiarismCheckViewModel: Plagiar
             PieChart(
                 plagiarismPercent = matched,
                 originalityPercent = original,
-                modifier = Modifier.size(220.dp)
+                modifier = Modifier
+                    .size(220.dp)
+                    .padding(top = 60.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
             Row(
@@ -105,7 +113,11 @@ fun ResultScreen(navController: NavController, plagiarismCheckViewModel: Plagiar
                 ) {
                     items(report.data.reportData.sources) {
                         Text(
-                            text = it.source
+                            text = it.source,
+                            modifier = Modifier.clickable {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"))
+                                context.startActivity(intent)
+                            }
                         )
                     }
 
@@ -145,5 +157,62 @@ private fun PieChart(
             sweepAngle = origSweep,
             useCenter = true
         )
+    }
+}
+
+// Упрощенная версия предпросмотра без сложных зависимостей
+@Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
+@Composable
+fun SimpleResultScreenPreview() {
+    AntiPlagTheme {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(start = 16.dp, end = 16.dp, top = 60.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
+            PieChart(
+                plagiarismPercent = 35,
+                originalityPercent = 65,
+                modifier = Modifier
+                    .size(220.dp)
+
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "● Плагиат: 35%",
+                    color = Color(0xFFE53935),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = "● Оригинальность: 65%",
+                    color = Color(0xFF43A047),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            LazyColumn {
+                items(
+                    listOf(
+                        "https://example.com/source1",
+                        "https://example.com/source2",
+                        "https://example.com/source3"
+                    )
+                ) { source ->
+                    Text(
+                        text = source,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
+        }
     }
 }

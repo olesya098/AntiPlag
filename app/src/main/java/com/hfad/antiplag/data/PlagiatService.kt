@@ -20,7 +20,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Parameters
 import io.ktor.http.contentType
 import io.ktor.http.headers
-const val TOKEN = "WsxW8xX6PpMupTU7tvsLYws-iEsw6iwt"
+const val TOKEN = "ULfjTwJ4deoilr8lflSWWupZYmnFFX7K"
 class PlagiatService {
 
     val client = ClientCore.instance.client
