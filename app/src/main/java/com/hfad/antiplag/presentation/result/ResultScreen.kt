@@ -44,8 +44,8 @@ fun ResultScreen(navController: NavController, plagiarismCheckViewModel: Plagiar
     val reportState = plagiarismCheckViewModel.report.collectAsState()
 
     val context = LocalContext.current
-    val matched = (reportState.value?.data?.report?.percent?.toInt() ?: 0).coerceIn(0, 100)
-    val original = (100 - matched).coerceIn(0, 100)
+    val matched = (reportState.value?.data?.report?.percent?.toDouble()?.toInt() ?: 0)
+    val original = (100 - matched)
 
     CustomScaffold(
         title = stringResource(R.string.app_name),

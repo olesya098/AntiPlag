@@ -108,7 +108,7 @@ fun BottomBar(plagiarismCheckViewModel: PlagiarismCheckViewModel) {
                     modifier = Modifier
                         .size(35.dp)
                         .padding(end = 5.dp)
-                        .clickable { plagiarismCheckViewModel.checkText(text = text ) }
+                        .clickable { plagiarismCheckViewModel.checkText(text = text.trimIndent().replace("\\s+".toRegex(), " ") ) }
                 )
             }
         )
