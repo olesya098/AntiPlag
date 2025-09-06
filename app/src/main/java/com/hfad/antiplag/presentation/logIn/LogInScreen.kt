@@ -173,7 +173,7 @@ fun LogInScreen(navController: NavController, viewModel: LoginSigninViewModel) {
                 thickness = 1.dp
             )
             Text(
-                text = "Or",
+                text = stringResource(R.string.or),
                 modifier = Modifier.padding(horizontal = 12.dp),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary,

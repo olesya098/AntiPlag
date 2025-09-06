@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -84,7 +85,7 @@ fun HomeScreen(
                 Manifest.permission.READ_EXTERNAL_STORAGE
             )
         )
-        
+
         // Инициализируем email из Firebase, если он пустой
         if (email.isEmpty()) {
             val currentEmail = viewModel.getCurrentUserEmail()
@@ -107,157 +108,167 @@ fun HomeScreen(
         onThemeChange = {
             themeViewModel.toggleTheme()
         },
-            onOut = {
-                viewModel.signOut()
-            },
-            email = email,
-            onDelete = {
-                viewModel.signDelete { success ->
-                    if (success){
-                        Log.d("DELETE ACCOUNT", "account deleted")
-                    }
-                }
-            },
-            onNavigateToLogin = {
-                navController.navigate(Routes.LOGIN) {
-                    popUpTo(navController.graph.startDestinationId) {
-                        inclusive = true
-                    }
+        onOut = {
+            viewModel.signOut()
+        },
+        email = email,
+        onDelete = {
+            viewModel.signDelete { success ->
+                if (success) {
+                    Log.d("DELETE ACCOUNT", "account deleted")
                 }
             }
-        ) { innerPadding ->
-            Scaffold(
-                topBar = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.background)
-                            .padding(innerPadding)
-                    ) {
-                        // TopBar content
-                        androidx.compose.material3.TopAppBar(
-                            title = {
-                                Box(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    androidx.compose.material3.Text(
-                                        "AntiPlag",
-                                        modifier = Modifier.align(Alignment.Center)
-                                    )
-                                }
-                            },
-                            navigationIcon = {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.menu),
-                                    contentDescription = "Menu",
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .clickable {
-                                            scope.launch {
-                                                if (drawerState.isClosed) drawerState.open()
-                                                else drawerState.close()
-                                            }
-                                        }
-                                )
-                            },
-                            actions = {
-                                Image(
-                                    painter = painterResource(id = R.drawable.information),
-                                    contentDescription = "About",
-                                    modifier = Modifier
-                                        .size(27.dp)
-                                        .clickable {
-                                            navController.navigate(Routes.ABOUT)
-                                        }
-                                )
-                            },
-                            colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.background
-                            )
-                        )
-                    }
-                },
-                bottomBar = {
-                    // BottomBar всегда прикреплен к низу
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 20.dp)
-                            .background(MaterialTheme.colorScheme.background)
-                    ) {
-                        BottomBar(plagiarismCheckViewModel)
-                    }
-                },
-                containerColor = MaterialTheme.colorScheme.background
-            ) { scaffoldPadding ->
+        },
+        onNavigateToLogin = {
+            navController.navigate(Routes.LOGIN) {
+                popUpTo(navController.graph.startDestinationId) {
+                    inclusive = true
+                }
+            }
+        }
+    ) { innerPadding ->
+        Scaffold(
+            topBar = {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(scaffoldPadding)
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(innerPadding)
+                ) {
+                    // TopBar content
+                    androidx.compose.material3.TopAppBar(
+                        title = {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                androidx.compose.material3.Text(
+                                    "AntiPlag",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        },
+
+                        navigationIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.menu),
+                                contentDescription = "Menu",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clickable {
+                                        scope.launch {
+                                            if (drawerState.isClosed) drawerState.open()
+                                            else drawerState.close()
+                                        }
+                                    }
+                            )
+                        },
+                        actions = {
+                            Image(
+                                painter = painterResource(id = R.drawable.information),
+                                contentDescription = "About",
+                                modifier = Modifier
+                                    .size(27.dp)
+                                    .clickable {
+                                        navController.navigate(Routes.ABOUT)
+                                    }
+                            )
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.background
+                        ),
+                    )
+                    Divider(
+                        color = MaterialTheme.colorScheme.scrim,
+                        thickness = 1.dp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                    )
+                }
+            },
+            bottomBar = {
+                // BottomBar всегда прикреплен к низу
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 20.dp)
                         .background(MaterialTheme.colorScheme.background)
                 ) {
-                    // Основной контент - центрированный
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        when (state.value) {
-                            PlagiatCheckState.Idle -> {
-                                Image(
-                                    painter = painterResource(id = R.drawable.icon),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(86.dp)
+                    BottomBar(plagiarismCheckViewModel)
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.background
+        ) { scaffoldPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(scaffoldPadding)
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                // Основной контент - центрированный
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    when (state.value) {
+                        PlagiatCheckState.Idle -> {
+                            Image(
+                                painter = painterResource(id = R.drawable.icon),
+                                contentDescription = null,
+                                modifier = Modifier.size(86.dp)
+                            )
+                        }
+
+                        PlagiatCheckState.SendText -> {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Message(
+                                    text = "Текст отправлен"
                                 )
                             }
+                        }
 
-                            PlagiatCheckState.SendText -> {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Message(
-                                        text = "Текст отправлен"
-                                    )
+                        is PlagiatCheckState.CheckingStatus -> {
+                            Message(
+                                text = "Текст обрабатывается ${(state.value as PlagiatCheckState.CheckingStatus).progress}"
+                            )
+                        }
+
+                        is PlagiatCheckState.Error -> {
+                            Message(
+                                text = "Error  ${(state.value as PlagiatCheckState.Error).message}"
+                            )
+                        }
+
+                        is PlagiatCheckState.Success -> {
+                            plagiarismCheckViewModel.updateReport(
+                                (state.value as PlagiatCheckState.Success).report
+                            )
+                            Message(
+                                text = "Узнать результат",
+                                modifier = Modifier.clickable {
+                                    navController.navigate(Routes.RESULTS)
                                 }
-                            }
+                            )
+                        }
 
-                            is PlagiatCheckState.CheckingStatus -> {
-                                Message(
-                                    text = "Текст обрабатывается ${(state.value as PlagiatCheckState.CheckingStatus).progress}"
-                                )
-                            }
-
-                            is PlagiatCheckState.Error -> {
-                                Message(
-                                    text = "Error  ${(state.value as PlagiatCheckState.Error).message}"
-                                )
-                            }
-
-                            is PlagiatCheckState.Success -> {
-                                plagiarismCheckViewModel.updateReport(
-                                    (state.value as PlagiatCheckState.Success).report
-                                )
-                                Message(
-                                    text = "Узнать результат",
-                                    modifier = Modifier.clickable {
-                                        navController.navigate(Routes.RESULTS)
-                                    }
-                                )
-                            }
-
-                            is PlagiatCheckState.WaitingStatus -> {
-                                Message(
-                                    text = "..."
-                                )
-                            }
+                        is PlagiatCheckState.WaitingStatus -> {
+                            Message(
+                                text = "..."
+                            )
                         }
                     }
                 }
             }
         }
+    }
 
 }
