@@ -42,9 +42,9 @@ import com.hfad.antiplag.navigation.Routes
 import com.hfad.antiplag.presentation.components.bottonBar.BottomBar
 import com.hfad.antiplag.presentation.components.message.Message
 import com.hfad.antiplag.presentation.components.navigationDrawer.NavigationDrawer
-import com.hfad.antiplag.ui.theme.AntiPlagTheme
 import com.hfad.antiplag.viewModel.LoginSigninViewModel
 import com.hfad.antiplag.viewModel.PlagiarismCheckViewModel
+import com.hfad.antiplag.viewModel.ThemeViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,13 +53,14 @@ fun HomeScreen(
     navController: NavHostController,
     plagiarismCheckViewModel: PlagiarismCheckViewModel,
     viewModel: LoginSigninViewModel,
+    themeViewModel: ThemeViewModel,
 ) {
 
     val email by viewModel.email.collectAsState()
     val state = plagiarismCheckViewModel.checkState.collectAsState()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var isDarkTheme by remember { mutableStateOf(false) }
+    val isDarkTheme by themeViewModel.isDarkTheme.collectAsState()
     val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
@@ -83,22 +84,29 @@ fun HomeScreen(
                 Manifest.permission.READ_EXTERNAL_STORAGE
             )
         )
+        
+        // Инициализируем email из Firebase, если он пустой
+        if (email.isEmpty()) {
+            val currentEmail = viewModel.getCurrentUserEmail()
+            if (currentEmail.isNotEmpty()) {
+                viewModel.updateEmail(currentEmail)
+            }
+        }
     }
 
-    AntiPlagTheme(darkTheme = isDarkTheme) {
-        NavigationDrawer(
-            drawerState = drawerState,
-            onMenuClick = {
-                scope.launch {
-                    if (drawerState.isClosed) drawerState.open()
-                    else drawerState.close()
-                }
-            },
-            navController = navController,
-            isDarkTheme = isDarkTheme,
-            onThemeChange = {
-                isDarkTheme = !isDarkTheme
-            },
+    NavigationDrawer(
+        drawerState = drawerState,
+        onMenuClick = {
+            scope.launch {
+                if (drawerState.isClosed) drawerState.open()
+                else drawerState.close()
+            }
+        },
+        navController = navController,
+        isDarkTheme = isDarkTheme,
+        onThemeChange = {
+            themeViewModel.toggleTheme()
+        },
             onOut = {
                 viewModel.signOut()
             },
@@ -251,5 +259,5 @@ fun HomeScreen(
                 }
             }
         }
-    }
+
 }

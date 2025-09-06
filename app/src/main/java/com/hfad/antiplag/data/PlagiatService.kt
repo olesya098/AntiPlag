@@ -20,7 +20,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Parameters
 import io.ktor.http.contentType
 import io.ktor.http.headers
-const val TOKEN = "pfgk8q2FD5yMTe9pTX7iBxWMmbgmHnz3"
+const val TOKEN = "8vqbo61u6My98TCekgrHILvdGVjQUsu9"
 class PlagiatService {
 
     val client = ClientCore.instance.client
@@ -51,7 +51,7 @@ class PlagiatService {
 
             }
         }
-        Log.d("PlagiatService Status", "$statusResponse")
+        Log.d("PlagiatService Status", statusResponse.bodyAsText())
 
         return statusResponse.body()
     }

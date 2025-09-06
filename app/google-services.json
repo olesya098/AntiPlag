@@ -66,6 +66,35 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:897098036218:android:35e125f366d9b9618d6a43",
+        "android_client_info": {
+          "package_name": "com.hfad.antiplagye"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "897098036218-8ljhnqvclakrs441vkr0kd9dfm8p57i8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFdGoMS6-xNix5tDt8cR9f9ZHBYKF5OSU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "897098036218-8ljhnqvclakrs441vkr0kd9dfm8p57i8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:897098036218:android:17bf8fa00bda49e58d6a43",
         "android_client_info": {
           "package_name": "com.hfad.codeinsideproba"

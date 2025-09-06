@@ -1,6 +1,8 @@
 package com.hfad.antiplag.presentation.logIn
 
-import android.R.attr.visible
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,13 +26,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.hfad.antiplag.R
 import com.hfad.antiplag.navigation.Routes
 import com.hfad.antiplag.presentation.components.customButton.CustomButton
@@ -47,11 +52,33 @@ fun LogInScreen(navController: NavController, viewModel: LoginSigninViewModel) {
     val password by viewModel.password.collectAsState()
     val showDialog by viewModel.showDialog.collectAsState()
     val dialogMessage by viewModel.dialogMessage.collectAsState()
-    var isPasswordVisible by remember { mutableStateOf(false) }
-
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    var isPasswordVisible by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    // Проверка авторизации при открытии экрана
     LaunchedEffect(Unit) {
+        viewModel.initializeGoogleSignIn(context)
         viewModel.clearFields()
+
+        // Если пользователь уже авторизован, переходим на главный экран
+        if (Firebase.auth.currentUser != null) {
+            navController.navigate(Routes.HOME) {
+                popUpTo(Routes.LOGIN) { inclusive = true }
+            }
+        }
+    }
+
+    // Launcher для результата Google Sign In
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        viewModel.handleGoogleSignInResult(result.data) { success ->
+            if (success) {
+                navController.navigate(Routes.HOME)
+            }
+        }
     }
 
     if (showDialog) {
@@ -109,14 +136,12 @@ fun LogInScreen(navController: NavController, viewModel: LoginSigninViewModel) {
                 onvalChange = { viewModel.updateEmail(it) }
             )
 
-
             CustomTextFieldPassword(
                 label = stringResource(R.string.password),
                 value = password,
                 onvalChange = { viewModel.updatePassword(it) },
                 visible = isPasswordVisible,
                 onVisibilityChange = { isPasswordVisible = it }
-
             )
         }
 
@@ -126,15 +151,12 @@ fun LogInScreen(navController: NavController, viewModel: LoginSigninViewModel) {
             title = stringResource(R.string.log_in),
             onClick = {
                 viewModel.logIn { success ->
-                    if (success){
+                    if (success) {
                         viewModel.showStatusDialog("Пользователь зашёл в систему")
                     }
-
                 }
-
             },
             modifier = Modifier.padding()
-
         )
 
         Row(
@@ -161,13 +183,17 @@ fun LogInScreen(navController: NavController, viewModel: LoginSigninViewModel) {
             )
         }
 
-        Image(
-            painter = painterResource(id = R.drawable.google),
-            contentDescription = "Sign in with Google",
-            modifier = Modifier
-                .size(48.dp)
-                .clickable { /* Обработка входа через Google */ }
-        )
+        if (isLoading) {
+            CircularProgressIndicator(modifier = Modifier.size(48.dp))
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.google),
+                contentDescription = "Sign in with Google",
+                modifier = Modifier
+                    .size(48.dp)
+                    .clickable { viewModel.signInWithGoogle(googleSignInLauncher) }
+            )
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -191,7 +217,6 @@ fun LogInScreen(navController: NavController, viewModel: LoginSigninViewModel) {
                     .padding(bottom = 32.dp)
                     .clickable {
                         navController.navigate(Routes.SIGNUP)
-
                     },
                 color = blueLite,
                 style = MaterialTheme.typography.bodySmall

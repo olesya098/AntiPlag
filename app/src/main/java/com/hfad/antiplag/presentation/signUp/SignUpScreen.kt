@@ -1,5 +1,8 @@
 package com.hfad.antiplag.presentation.signUp
 
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,7 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -46,13 +50,28 @@ fun SignUpScreen(navController: NavController, viewModel: LoginSigninViewModel) 
     val showDialog by viewModel.showDialog.collectAsState()
     val dialogMessage by viewModel.dialogMessage.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
     var isPasswordVisible by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
+    // Инициализация Google Sign In
     LaunchedEffect(Unit) {
+        viewModel.initializeGoogleSignIn(context)
         viewModel.clearFields()
     }
 
-    if (showDialog){
+    // Launcher для результата Google Sign In
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        viewModel.handleGoogleSignInResult(result.data) { success ->
+            if (success) {
+                navController.navigate(Routes.HOME)
+            }
+        }
+    }
+
+    if (showDialog) {
         Dialog(
             message = dialogMessage,
             onDismiss = {
@@ -113,7 +132,6 @@ fun SignUpScreen(navController: NavController, viewModel: LoginSigninViewModel) 
                 onvalChange = { viewModel.updatePassword(it) },
                 visible = isPasswordVisible,
                 onVisibilityChange = { isPasswordVisible = it }
-
             )
         }
 
@@ -123,16 +141,12 @@ fun SignUpScreen(navController: NavController, viewModel: LoginSigninViewModel) 
             title = stringResource(R.string.sign_up),
             onClick = {
                 viewModel.signIn { success ->
-                    if (success){
+                    if (success) {
                         viewModel.showStatusDialog("Пользователь зарегистрирован")
                     }
-
-
                 }
-
             },
             modifier = Modifier.padding()
-
         )
 
         Row(
@@ -159,13 +173,17 @@ fun SignUpScreen(navController: NavController, viewModel: LoginSigninViewModel) 
             )
         }
 
-        Image(
-            painter = painterResource(id = R.drawable.google),
-            contentDescription = stringResource(R.string.sign_in_with_google),
-            modifier = Modifier
-                .size(48.dp)
-                .clickable { /* Обработка входа через Google */ }
-        )
+        if (isLoading) {
+            CircularProgressIndicator(modifier = Modifier.size(48.dp))
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.google),
+                contentDescription = stringResource(R.string.sign_in_with_google),
+                modifier = Modifier
+                    .size(48.dp)
+                    .clickable { viewModel.signInWithGoogle(googleSignInLauncher) }
+            )
+        }
 
         Spacer(modifier = Modifier.weight(1f))
         Row(
@@ -188,7 +206,6 @@ fun SignUpScreen(navController: NavController, viewModel: LoginSigninViewModel) 
                     .padding(bottom = 32.dp)
                     .clickable {
                         navController.navigate(Routes.LOGIN)
-
                     },
                 color = blueLite,
                 style = MaterialTheme.typography.bodySmall

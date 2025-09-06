@@ -14,7 +14,7 @@ data class StatusData(
     val state: Int,
     val language: String,
     val pages: Int,
-    val report: Report,
+    val report: Report? = null,
 
 )
 @Serializable

@@ -29,10 +29,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.hfad.antiplag.R
 import com.hfad.antiplag.navigation.Routes
 import com.hfad.antiplag.ui.theme.blueLite
@@ -40,14 +43,23 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(navController: NavHostController) {
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
         delay(3400L)
-        navController.navigate(Routes.LOGIN) {
-            popUpTo(Routes.SPLASHSCREEN) { inclusive = true } // Удаляем SplashScreen из стека
+
+        // Проверяем состояние авторизации
+        val isLoggedIn = Firebase.auth.currentUser != null
+
+        if (isLoggedIn) {
+            navController.navigate(Routes.HOME) {
+                popUpTo(Routes.SPLASHSCREEN) { inclusive = true }
+            }
+        } else {
+            navController.navigate(Routes.LOGIN) {
+                popUpTo(Routes.SPLASHSCREEN) { inclusive = true }
+            }
         }
-//        navController.navigate(HomeRoute) {
-//            popUpTo(SplashRoute) { inclusive = true } // Удаляем SplashScreen из стека
-//       }
     }
     // 1. Создаем бесконечную анимацию
     val infiniteTransition = rememberInfiniteTransition()

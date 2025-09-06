@@ -24,4 +24,7 @@
     <string name="please_sign_up_to_your_account">Please sign up to your account</string>
     <string name="sign_in_with_google">Sign in with Google</string>
     <string name="already_registered">Already registered?</string>
+
+    <string name="default_web_client_id">897098036218-8ljhnqvclakrs441vkr0kd9dfm8p57i8.apps.googleusercontent.com</string>
+
 </resources>

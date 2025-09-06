@@ -1,7 +1,9 @@
 package com.hfad.antiplag.data
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateMapOf
 import com.hfad.antiplag.model.PlagiatCheckState
+import com.hfad.antiplag.model.SendResponse
 import com.hfad.antiplag.model.StatusResponse
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,41 +14,55 @@ class PlagiarismCheckManager(
 ) {
     private val _state = MutableStateFlow<PlagiatCheckState>(PlagiatCheckState.Idle)
     val state = _state.asStateFlow()
-    suspend fun checkText(text: String) {
+
+    suspend fun checkTextAndGetReport(text: String) {
         _state.value = PlagiatCheckState.SendText
         try {
-            val sendResponse =
-                plagiatService.sendCheckText(text = text)//отправка текста на проверку
-            val textId = sendResponse.data?.text?.id
-            textId?.let { _state.value = PlagiatCheckState.WaitingStatus(it) }
 
-            var statusResponse: StatusResponse? = null
-            var count = 0
-            val maxCount = 30
-            do {
-                delay(10000L)
-                count++
-                statusResponse = textId?.let { plagiatService.statusResponse(it) }
-                textId?.let {
-                    _state.value = PlagiatCheckState.CheckingStatus(
-                        it, progress = (count * 100 / maxCount).coerceAtMost(100)
-                    )
-                }
+            val sendResponse = plagiatService.sendCheckText(text = text)
+            val textId = sendResponse.data?.text?.id ?: throw Exception("Error no text id")
+            _state.value = PlagiatCheckState.WaitingStatus(textId)
 
-            } while (statusResponse?.data?.state != 5 && count < maxCount)
-            if (statusResponse?.data?.state != 5) {
-                _state.value = PlagiatCheckState.Error(" Timeout, Waiting Plagiarism is over")
-                return
+            val finalStatus = checkStatusFive(textId)
+
+            if (finalStatus.data.state == 5){
+                val report = plagiatService.reportResponse(textId)
+                _state.value = PlagiatCheckState.Success(report)
+            }else{
+                _state.value = PlagiatCheckState.Error("checkTextAndGetReport error")
             }
 
-            val report = textId?.let { plagiatService.reportResponse(it) }
-            report?.let { _state.value = PlagiatCheckState.Success(it) }
 
         } catch (e: Exception) {
-            _state.value = PlagiatCheckState.Error(e.message.toString())
+            _state.value = PlagiatCheckState.Error("Ошибка ${e.message}")
+            Log.e("PlagiarismCheckManager", "Ошибка ${e.message}")
 
         }
+
     }
+
+    private suspend fun checkStatusFive(textId: Int): StatusResponse {
+        var count = 0
+        val maxCount = 20
+        val time = 10000L
+
+        while (count < maxCount) {
+            val statusResponse = plagiatService.statusResponse(id = textId)
+            val currentState = statusResponse.data.state
+            when (currentState) {
+                5 -> return statusResponse
+                2, 3 -> {
+                    val progress = (count * 100 / maxCount).coerceAtMost(100)
+                    _state.value = PlagiatCheckState.CheckingStatus(textId = textId, progress)
+                    delay(time)
+                    count++
+                }
+                else -> throw Exception("Error checkStatusFive")
+            }
+        }
+        throw Exception("Exceeded the number of attempts")
+    }
+
 
     fun reset() {
         _state.value = PlagiatCheckState.Idle

@@ -20,7 +20,7 @@ class PlagiarismCheckViewModel : ViewModel() {
     val checkState = checkManager.state
     fun checkText(text: String) {
         viewModelScope.launch {
-            checkManager.checkText(text)
+            checkManager.checkTextAndGetReport(text)
         }
 
     }
