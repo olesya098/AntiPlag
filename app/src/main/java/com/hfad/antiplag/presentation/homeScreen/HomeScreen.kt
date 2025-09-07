@@ -63,6 +63,7 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     val isDarkTheme by themeViewModel.isDarkTheme.collectAsState()
     val context = LocalContext.current
+    val isGoogleUser by viewModel.isGoogleUser.collectAsState()
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
@@ -125,7 +126,8 @@ fun HomeScreen(
                     inclusive = true
                 }
             }
-        }
+        },
+        isGoogleUser = isGoogleUser,
     ) { innerPadding ->
         Scaffold(
             topBar = {

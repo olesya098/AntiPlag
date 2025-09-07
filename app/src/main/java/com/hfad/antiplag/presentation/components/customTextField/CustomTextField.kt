@@ -29,8 +29,10 @@ fun CustomTextField(
 ) {
     TextField(
         value = value,
-        onValueChange = {
-            onvalChange(it)
+        onValueChange = { newText ->
+            // Удаляем все пробелы из вводимого текста
+            val filteredText = newText.replace("\\s".toRegex(), "")
+            onvalChange(filteredText)
         },
         colors = TextFieldDefaults.colors(
             focusedTextColor = MaterialTheme.colorScheme.primary,

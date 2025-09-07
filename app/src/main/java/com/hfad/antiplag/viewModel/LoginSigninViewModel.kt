@@ -64,6 +64,9 @@ class LoginSigninViewModel : ViewModel() {
     private val _authState = MutableStateFlow<AuthResult>(AuthResult.Success)
     val authState: StateFlow<AuthResult> = _authState.asStateFlow()
 
+    private val _isGoogleUser = MutableStateFlow(false)
+    val isGoogleUser: StateFlow<Boolean> = _isGoogleUser.asStateFlow()
+
     // Инициализация Google Sign In
     fun initializeGoogleSignIn(context: Context) {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -128,6 +131,7 @@ class LoginSigninViewModel : ViewModel() {
                 _authState.value = AuthResult.Success
                 _errorMessage.value = ""
                 _isLoading.value = false
+                _isGoogleUser.value = true
                 showStatusDialog("Успешный вход через Google")
                 AuthResult.Success
             } else {
@@ -225,6 +229,7 @@ class LoginSigninViewModel : ViewModel() {
                 _authState.value = AuthResult.Success
                 _errorMessage.value = ""
                 _isLoading.value = false
+                _isGoogleUser.value = false
                 AuthResult.Success
             } else {
                 _authState.value = AuthResult.Error("Ошибка входа")
@@ -375,6 +380,7 @@ class LoginSigninViewModel : ViewModel() {
                 _email.value = ""
                 _password.value = ""
                 _errorMessage.value = ""
+                _isGoogleUser.value = false
 
                 Log.d("MyLog", "User signed out successfully")
             } catch (e: Exception) {

@@ -71,8 +71,9 @@ fun NavigationDrawer(
     onDelete: () -> Unit,
     email: String,
     onNavigateToLogin: () -> Unit, // Добавьте этот параметр
+    isGoogleUser: Boolean, // <- добавлено
     content: @Composable (PaddingValues) -> Unit,
-    ) {
+) {
     val scope = rememberCoroutineScope()
 
     // Цвета берутся из текущей темы
@@ -100,13 +101,14 @@ fun NavigationDrawer(
             icon = R.drawable.login,
             label = stringResource(R.string.log_out),
             route = Routes.LOGOUT
-        ),
+        )
+    ) + if (!isGoogleUser) listOf(
         DrawerItem(
             icon = R.drawable.rubish,
             label = stringResource(R.string.delete_an_account),
             route = Routes.DELETE
         )
-    )
+    ) else emptyList()
 
     var selectedItem by remember { mutableStateOf(items[0]) }
 
