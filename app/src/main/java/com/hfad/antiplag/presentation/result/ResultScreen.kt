@@ -115,7 +115,7 @@ fun ResultScreen(navController: NavController, plagiarismCheckViewModel: Plagiar
                         Text(
                             text = it.source,
                             modifier = Modifier.clickable {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"))
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.source))
                                 context.startActivity(intent)
                             }
                         )

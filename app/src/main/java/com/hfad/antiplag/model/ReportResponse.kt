@@ -25,36 +25,21 @@ data class ReportData(
     @SerialName("matched_length")
     val matchedLength: Int,
     @SerialName("matched_percent")
-    val matchedPercent: Int,
+    val matchedPercent: Float,
     @SerialName("external_queries")
     val externalQueries: Int,
-    @SerialName("destinations_clusters")
-    val destinationsClusters:  List<DestinationsClusters>,
-
     )
-@Serializable
-data class DestinationsClusters(
-    val source: Int,
-    val id: Int,
-    val offsets: List<OffsetsData>
-)
 
-@Serializable
-data class OffsetsData(
-    val start: Int,
-    val end: Int,
-    val cos: Int
-)
 @Serializable
 data class NodeData(
     val enabled: Boolean,
     val start: Int,
     val end: Int,
     val text: String,
-    val sources: List<Int>,
-    val references: List<String>,
-    val headers: List<String>,
-    val quotes: List<String>,
+    val sources: List<Int> = listOf(),
+    val references: List<String> = listOf(),
+    val headers: List<String> = listOf(),
+    val quotes: List<String> = listOf(),
 
     )
 
@@ -80,5 +65,5 @@ data class SourcesData(
 @Serializable
 data class LinkData(
     val name: String,
-    val urls: String
+    val urls: List<String>
 )

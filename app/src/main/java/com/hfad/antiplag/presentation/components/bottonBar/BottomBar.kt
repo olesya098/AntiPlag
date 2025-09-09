@@ -102,16 +102,32 @@ fun BottomBar(plagiarismCheckViewModel: PlagiarismCheckViewModel) {
                 )
             },
             trailingIcon = {
+                Log.d("Final text", processText(text.trimIndent()))
                 Image(
                     painter = painterResource(id = R.drawable.send),
                     contentDescription = null,
                     modifier = Modifier
                         .size(35.dp)
                         .padding(end = 5.dp)
-                        .clickable { plagiarismCheckViewModel.checkText(text = text.trimIndent().replace("\\s+".toRegex(), " ") ) }
+                        .clickable { plagiarismCheckViewModel.checkText(text = processText(text.trimIndent())) }
+
                 )
             }
         )
 
     }
+
+
+}
+fun processText(input: String): String {
+    return input.lines()
+        .map { it.trim() }
+        .filter { it.isNotBlank() }
+        .joinToString(" ")
+        .replace(Regex("\\*\\*"), "")
+        .replace(Regex("\\[\\[.*?]]"), "")
+        .replace(regex = Regex("\\{.*?\\}"), replacement = "")
+        .replace(Regex("\\[.*?]\\(.*?\\)"), "")
+        .replace(Regex("\\s+"), " ")
+        .trim()
 }
