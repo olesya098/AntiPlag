@@ -1,6 +1,7 @@
 package com.hfad.antiplag.presentation.logIn
 
 import android.content.Intent
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -41,7 +42,6 @@ import com.hfad.antiplag.navigation.Routes
 import com.hfad.antiplag.presentation.components.customButton.CustomButton
 import com.hfad.antiplag.presentation.components.customTextField.CustomTextField
 import com.hfad.antiplag.presentation.components.customTextFieldPassword.CustomTextFieldPassword
-import com.hfad.antiplag.presentation.components.dialog.Dialog
 import com.hfad.antiplag.ui.theme.blueLite
 import com.hfad.antiplag.ui.theme.red
 import com.hfad.antiplag.viewModel.LoginSigninViewModel
@@ -51,8 +51,6 @@ fun LogInScreen(navController: NavController, viewModel: LoginSigninViewModel) {
 
     val email by viewModel.email.collectAsState()
     val password by viewModel.password.collectAsState()
-    val showDialog by viewModel.showDialog.collectAsState()
-    val dialogMessage by viewModel.dialogMessage.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     var isPasswordVisible by remember { mutableStateOf(false) }
@@ -75,21 +73,14 @@ fun LogInScreen(navController: NavController, viewModel: LoginSigninViewModel) {
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        viewModel.handleGoogleSignInResult(result.data) { success ->
+        viewModel.handleGoogleSignInResult(result.data) { success -> // ИСПРАВЛЕНО: правильная сигнатура
             if (success) {
+                Toast.makeText(context, "Успешный вход через Google", Toast.LENGTH_SHORT).show()
                 navController.navigate(Routes.HOME)
+            } else {
+                Toast.makeText(context, "Ошибка входа через Google", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    if (showDialog) {
-        Dialog(
-            message = dialogMessage,
-            onDismiss = {
-                viewModel.dismissDialog()
-                navController.navigate(Routes.HOME)
-            }
-        )
     }
 
     Column(
@@ -152,9 +143,12 @@ fun LogInScreen(navController: NavController, viewModel: LoginSigninViewModel) {
         CustomButton(
             title = stringResource(R.string.log_in),
             onClick = {
-                viewModel.logIn { success ->
+                viewModel.logIn(context) { success -> // ИСПРАВЛЕНО: добавлен context
                     if (success) {
-                        viewModel.showStatusDialog("Пользователь зашёл в систему")
+                        Toast.makeText(context, "Успешный вход", Toast.LENGTH_SHORT).show()
+                        navController.navigate(Routes.HOME)
+                    } else {
+                        Toast.makeText(context, "Ошибка входа", Toast.LENGTH_SHORT).show()
                     }
                 }
             },

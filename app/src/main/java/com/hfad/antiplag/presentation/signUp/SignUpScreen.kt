@@ -1,5 +1,6 @@
 package com.hfad.antiplag.presentation.signUp
 
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -47,8 +48,6 @@ import com.hfad.antiplag.viewModel.LoginSigninViewModel
 fun SignUpScreen(navController: NavController, viewModel: LoginSigninViewModel) {
     val email by viewModel.email.collectAsState()
     val password by viewModel.password.collectAsState()
-    val showDialog by viewModel.showDialog.collectAsState()
-    val dialogMessage by viewModel.dialogMessage.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     var isPasswordVisible by remember { mutableStateOf(false) }
@@ -66,19 +65,12 @@ fun SignUpScreen(navController: NavController, viewModel: LoginSigninViewModel) 
     ) { result ->
         viewModel.handleGoogleSignInResult(result.data) { success ->
             if (success) {
+                Toast.makeText(context, "Успешная регистрация через Google", Toast.LENGTH_SHORT).show()
                 navController.navigate(Routes.HOME)
+            } else {
+                Toast.makeText(context, "Ошибка регистрации через Google", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    if (showDialog) {
-        Dialog(
-            message = dialogMessage,
-            onDismiss = {
-                viewModel.dismissDialog()
-                navController.navigate(Routes.LOGIN)
-            }
-        )
     }
 
     Column(
@@ -141,9 +133,12 @@ fun SignUpScreen(navController: NavController, viewModel: LoginSigninViewModel) 
         CustomButton(
             title = stringResource(R.string.sign_up),
             onClick = {
-                viewModel.signIn { success ->
+                viewModel.signIn(context) { success ->
                     if (success) {
-                        viewModel.showStatusDialog("Пользователь зарегистрирован")
+                        Toast.makeText(context, "Пользователь зарегистрирован", Toast.LENGTH_SHORT).show()
+                        navController.navigate(Routes.HOME)
+                    } else {
+                        Toast.makeText(context, "Ошибка регистрации", Toast.LENGTH_SHORT).show()
                     }
                 }
             },

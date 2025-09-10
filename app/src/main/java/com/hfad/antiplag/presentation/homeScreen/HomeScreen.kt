@@ -75,7 +75,7 @@ fun HomeScreen(
                 if (isGranted) {
                     Log.d("permissions", "permissions is yes")
                 } else {
-                    Toast.makeText(context, "permissions is noooo", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Разрешения не предоставлены", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -114,20 +114,23 @@ fun HomeScreen(
             themeViewModel.toggleTheme()
         },
         onOut = {
-            viewModel.signOut()
+            viewModel.signOut(context) { // ИСПРАВЛЕНО: добавлен callback
+                Toast.makeText(context, "Вы вышли из системы", Toast.LENGTH_SHORT).show()
+            }
         },
         email = email,
         onDelete = {
-            viewModel.signDelete { success ->
+            viewModel.signDelete(context) { success -> // ИСПРАВЛЕНО: правильная сигнатура
                 if (success) {
-                    Log.d("DELETE ACCOUNT", "account deleted")
+                    Toast.makeText(context, "Аккаунт удален", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Ошибка при удалении аккаунта", Toast.LENGTH_SHORT).show()
                 }
             }
         },
-
         onNavigateToLogin = {
             navController.navigate(Routes.LOGIN) {
-                popUpTo(0) { // Очищаем весь стек навигации
+                popUpTo(0) {
                     inclusive = true
                 }
             }
@@ -184,7 +187,6 @@ fun HomeScreen(
                         colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = MaterialTheme.colorScheme.background
                         ),
-                        // ДОБАВЛЕНО: scroll behavior
                         scrollBehavior = scrollBehavior
                     )
                     Divider(
@@ -197,7 +199,6 @@ fun HomeScreen(
                 }
             },
             bottomBar = {
-                // BottomBar всегда прикреплен к низу
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -249,7 +250,7 @@ fun HomeScreen(
 
                         is PlagiatCheckState.Error -> {
                             Message(
-                                text = "Error  ${(state.value as PlagiatCheckState.Error).message}"
+                                text = "Ошибка: ${(state.value as PlagiatCheckState.Error).message}"
                             )
                         }
 
@@ -275,5 +276,4 @@ fun HomeScreen(
             }
         }
     }
-
 }

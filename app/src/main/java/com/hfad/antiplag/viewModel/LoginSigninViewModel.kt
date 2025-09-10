@@ -3,6 +3,7 @@ package com.hfad.antiplag.viewModel
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,19 +22,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import android.util.Patterns
-
-// Sealed классы для типизированных состояний
-sealed class AuthResult {
-    object Success : AuthResult()
-    data class Error(val message: String) : AuthResult()
-    object Loading : AuthResult()
-}
-
-sealed class ValidationResult {
-    object Valid : ValidationResult()
-    data class Invalid(val message: String) : ValidationResult()
-}
 
 class LoginSigninViewModel : ViewModel() {
 
@@ -47,22 +35,11 @@ class LoginSigninViewModel : ViewModel() {
     private val _password = MutableStateFlow("")
     val password: StateFlow<String> = _password.asStateFlow()
 
-    // Состояния UI
-    private val _showDialog = MutableStateFlow(false)
-    val showDialog: StateFlow<Boolean> = _showDialog.asStateFlow()
-
-    private val _dialogMessage = MutableStateFlow("")
-    val dialogMessage: StateFlow<String> = _dialogMessage.asStateFlow()
-
     private val _errorMessage = MutableStateFlow("")
     val errorMessage: StateFlow<String> = _errorMessage.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
-    // Единое состояние авторизации
-    private val _authState = MutableStateFlow<AuthResult>(AuthResult.Success)
-    val authState: StateFlow<AuthResult> = _authState.asStateFlow()
 
     private val _isGoogleUser = MutableStateFlow(false)
     val isGoogleUser: StateFlow<Boolean> = _isGoogleUser.asStateFlow()
@@ -84,246 +61,151 @@ class LoginSigninViewModel : ViewModel() {
         launcher.launch(signInIntent)
     }
 
-    // Оптимизированная обработка результата входа через Google
-    suspend fun handleGoogleSignInResult(data: Intent?): AuthResult {
-        _authState.value = AuthResult.Loading
-        _isLoading.value = true
-        
-        return try {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            val account = task.getResult(ApiException::class.java)
-            if (account != null) {
-                firebaseAuthWithGoogle(account)
-            } else {
-                val errorMessage = "Не удалось получить данные аккаунта Google"
-                _authState.value = AuthResult.Error(errorMessage)
-                _errorMessage.value = errorMessage
-                _isLoading.value = false
-                AuthResult.Error(errorMessage)
-            }
-        } catch (e: ApiException) {
-            val errorMessage = "Ошибка входа через Google: ${e.statusCode}"
-            Log.w("MyLog", "Google sign in failed", e)
-            _authState.value = AuthResult.Error(errorMessage)
-            _errorMessage.value = errorMessage
-            _isLoading.value = false
-            AuthResult.Error(errorMessage)
-        }
-    }
-    
-    // Обратная совместимость с callback'ами
+    // Обработка результата входа через Google (ИСПРАВЛЕННАЯ СИГНАТУРА)
     fun handleGoogleSignInResult(data: Intent?, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val result = handleGoogleSignInResult(data)
-            onResult(result is AuthResult.Success)
+            _isLoading.value = true
+            try {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+                val account = task.getResult(ApiException::class.java)
+                if (account != null) {
+                    firebaseAuthWithGoogle(account, onResult)
+                } else {
+                    _errorMessage.value = "Не удалось получить данные аккаунта Google"
+                    _isLoading.value = false
+                    onResult(false)
+                }
+            } catch (e: ApiException) {
+                Log.w("MyLog", "Google sign in failed", e)
+                _errorMessage.value = "Ошибка входа через Google: ${e.statusCode}"
+                _isLoading.value = false
+                onResult(false)
+            }
         }
     }
 
-    // Оптимизированная аутентификация в Firebase с учетными данными Google
-    private suspend fun firebaseAuthWithGoogle(account: GoogleSignInAccount): AuthResult {
-        return try {
+    // Аутентификация в Firebase с учетными данными Google
+    private suspend fun firebaseAuthWithGoogle(account: GoogleSignInAccount, onResult: (Boolean) -> Unit) {
+        try {
             val credential = GoogleAuthProvider.getCredential(account.idToken, null)
             val result = auth.signInWithCredential(credential).await()
 
             if (result.user != null) {
                 Log.d("MyLog", "signInWithGoogle: successful")
                 _email.value = account.email ?: ""
-                _authState.value = AuthResult.Success
                 _errorMessage.value = ""
                 _isLoading.value = false
                 _isGoogleUser.value = true
-                showStatusDialog("Успешный вход через Google")
-                AuthResult.Success
+                onResult(true)
             } else {
-                val errorMessage = "Ошибка аутентификации через Google"
-                _authState.value = AuthResult.Error(errorMessage)
+                _errorMessage.value = "Ошибка аутентификации через Google"
                 _isLoading.value = false
-                AuthResult.Error(errorMessage)
+                onResult(false)
             }
         } catch (e: Exception) {
-            val errorMessage = "Ошибка аутентификации через Google"
             Log.d("MyLog", "signInWithGoogle: Failed", e)
-            _authState.value = AuthResult.Error(errorMessage)
-            _errorMessage.value = errorMessage
+            _errorMessage.value = "Ошибка аутентификации через Google"
             _isLoading.value = false
-            AuthResult.Error(errorMessage)
-        }
-    }
-    
-    // Обратная совместимость с callback'ами
-    private fun firebaseAuthWithGoogle(account: GoogleSignInAccount, onResult: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            val result = firebaseAuthWithGoogle(account)
-            onResult(result is AuthResult.Success)
+            onResult(false)
         }
     }
 
-    // Оптимизированные методы обновления полей с валидацией
+    // Методы обновления полей
     fun updateEmail(email: String) {
         _email.value = email
         _errorMessage.value = ""
-        
-        // Валидация в реальном времени
-        val validation = validateEmail(email)
-        if (validation is ValidationResult.Invalid) {
-            _errorMessage.value = validation.message
-        }
     }
 
     fun updatePassword(password: String) {
         _password.value = password
         _errorMessage.value = ""
-        
-        // Валидация в реальном времени
-        val validation = validatePassword(password, false)
-        if (validation is ValidationResult.Invalid) {
-            _errorMessage.value = validation.message
-        }
-    }
-    
-    // Новый метод для проверки готовности к авторизации
-    fun isReadyForAuth(): Boolean {
-        val emailValidation = validateEmail(_email.value)
-        val passwordValidation = validatePassword(_password.value, false)
-        return emailValidation is ValidationResult.Valid && passwordValidation is ValidationResult.Valid
-    }
-    
-    // Новый метод для проверки готовности к регистрации
-    fun isReadyForRegistration(): Boolean {
-        val emailValidation = validateEmail(_email.value)
-        val passwordValidation = validatePassword(_password.value, true)
-        return emailValidation is ValidationResult.Valid && passwordValidation is ValidationResult.Valid
     }
 
-    fun showStatusDialog(message: String) {
-        _dialogMessage.value = message
-        _showDialog.value = true
-    }
-
-    fun dismissDialog() {
-        _showDialog.value = false
-    }
-
-    private fun setError(message: String) {
-        _errorMessage.value = message
-    }
-
-    // Оптимизированный метод входа
-    suspend fun logIn(): AuthResult {
-        _authState.value = AuthResult.Loading
-        _isLoading.value = true
-        
-        // Валидация данных
-        val validation = validateCredentials(_email.value, _password.value, false)
-        if (validation is ValidationResult.Invalid) {
-            _authState.value = AuthResult.Error(validation.message)
-            _errorMessage.value = validation.message
-            _isLoading.value = false
-            return AuthResult.Error(validation.message)
-        }
-        
-        return try {
-            val result = auth.signInWithEmailAndPassword(_email.value, _password.value).await()
-            if (result.user != null) {
-                Log.d("MyLog", "SignInUserWithEmail: successful")
-                _authState.value = AuthResult.Success
-                _errorMessage.value = ""
-                _isLoading.value = false
-                _isGoogleUser.value = false
-                AuthResult.Success
-            } else {
-                _authState.value = AuthResult.Error("Ошибка входа")
-                _isLoading.value = false
-                AuthResult.Error("Ошибка входа")
-            }
-        } catch (e: FirebaseAuthException) {
-            val errorMessage = getUserFriendlyError(e.errorCode)
-            Log.d("MyLog", "SignInUserWithEmail: Failed", e)
-            _authState.value = AuthResult.Error(errorMessage)
-            _errorMessage.value = errorMessage
-            _isLoading.value = false
-            AuthResult.Error(errorMessage)
-        }
-    }
-    
-    // Обратная совместимость с callback'ами
-    fun logIn(onResult: (Boolean) -> Unit) {
+    // Метод входа (ИСПРАВЛЕННАЯ СИГНАТУРА)
+    fun logIn(context: Context, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val result = logIn()
-            onResult(result is AuthResult.Success)
-        }
-    }
+            _isLoading.value = true
 
-    // Оптимизированный метод регистрации
-    suspend fun signUp(): AuthResult {
-        _authState.value = AuthResult.Loading
-        _isLoading.value = true
-        
-        // Валидация данных для регистрации
-        val validation = validateCredentials(_email.value, _password.value, true)
-        if (validation is ValidationResult.Invalid) {
-            _authState.value = AuthResult.Error(validation.message)
-            _errorMessage.value = validation.message
-            _isLoading.value = false
-            return AuthResult.Error(validation.message)
-        }
-        
-        return try {
-            val result = auth.createUserWithEmailAndPassword(_email.value, _password.value).await()
-            if (result.user != null) {
-                Log.d("MyLog", "createUserWithEmailAndPassword: successful")
-                _authState.value = AuthResult.Success
-                _errorMessage.value = ""
+            // Валидация данных
+            if (_email.value.isBlank() || _password.value.isBlank()) {
+                _errorMessage.value = "Заполните все поля"
+                Toast.makeText(context, "Заполните все поля", Toast.LENGTH_SHORT).show()
                 _isLoading.value = false
-                AuthResult.Success
-            } else {
-                _authState.value = AuthResult.Error("Ошибка регистрации")
-                _isLoading.value = false
-                AuthResult.Error("Ошибка регистрации")
+                onResult(false)
+                return@launch
             }
-        } catch (e: FirebaseAuthException) {
-            val errorMessage = getUserFriendlyError(e.errorCode)
-            Log.d("MyLog", "createUserWithEmailAndPassword: Failed", e)
-            _authState.value = AuthResult.Error(errorMessage)
-            _errorMessage.value = errorMessage
-            _isLoading.value = false
-            AuthResult.Error(errorMessage)
+
+            try {
+                val result = auth.signInWithEmailAndPassword(_email.value, _password.value).await()
+                if (result.user != null) {
+                    Log.d("MyLog", "SignInUserWithEmail: successful")
+                    _errorMessage.value = ""
+                    _isLoading.value = false
+                    _isGoogleUser.value = false
+                    Toast.makeText(context, "Успешный вход", Toast.LENGTH_SHORT).show()
+                    onResult(true)
+                } else {
+                    _errorMessage.value = "Ошибка входа"
+                    Toast.makeText(context, "Ошибка входа", Toast.LENGTH_SHORT).show()
+                    _isLoading.value = false
+                    onResult(false)
+                }
+            } catch (e: FirebaseAuthException) {
+                val errorMessage = getUserFriendlyError(e.errorCode)
+                Log.d("MyLog", "SignInUserWithEmail: Failed", e)
+                _errorMessage.value = errorMessage
+                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                _isLoading.value = false
+                onResult(false)
+            }
         }
     }
-    
-    // Обратная совместимость с callback'ами
-    fun signIn(onResult: (Boolean) -> Unit) {
+
+    // Метод регистрации (ИСПРАВЛЕННАЯ СИГНАТУРА)
+    fun signIn(context: Context, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val result = signUp()
-            onResult(result is AuthResult.Success)
-        }
-    }
+            _isLoading.value = true
 
-    // Оптимизированная валидация данных
-    private fun validateEmail(email: String): ValidationResult {
-        return when {
-            email.isBlank() -> ValidationResult.Invalid("Email не может быть пустым")
-            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> ValidationResult.Invalid("Введите корректный email адрес")
-            else -> ValidationResult.Valid
-        }
-    }
+            // Валидация данных
+            if (_email.value.isBlank() || _password.value.isBlank()) {
+                _errorMessage.value = "Заполните все поля"
+                Toast.makeText(context, "Заполните все поля", Toast.LENGTH_SHORT).show()
+                _isLoading.value = false
+                onResult(false)
+                return@launch
+            }
 
-    private fun validatePassword(password: String, isRegistration: Boolean = false): ValidationResult {
-        return when {
-            password.isBlank() -> ValidationResult.Invalid("Пароль не может быть пустым")
-            isRegistration && password.length < 6 -> ValidationResult.Invalid("Пароль должен содержать минимум 6 символов")
-            else -> ValidationResult.Valid
-        }
-    }
+            if (_password.value.length < 6) {
+                _errorMessage.value = "Пароль должен содержать минимум 6 символов"
+                Toast.makeText(context, "Пароль должен содержать минимум 6 символов", Toast.LENGTH_SHORT).show()
+                _isLoading.value = false
+                onResult(false)
+                return@launch
+            }
 
-    private fun validateCredentials(email: String, password: String, isRegistration: Boolean = false): ValidationResult {
-        val emailValidation = validateEmail(email)
-        if (emailValidation is ValidationResult.Invalid) return emailValidation
-        
-        val passwordValidation = validatePassword(password, isRegistration)
-        if (passwordValidation is ValidationResult.Invalid) return passwordValidation
-        
-        return ValidationResult.Valid
+            try {
+                val result = auth.createUserWithEmailAndPassword(_email.value, _password.value).await()
+                if (result.user != null) {
+                    Log.d("MyLog", "createUserWithEmailAndPassword: successful")
+                    _errorMessage.value = ""
+                    _isLoading.value = false
+                    Toast.makeText(context, "Пользователь зарегистрирован", Toast.LENGTH_SHORT).show()
+                    onResult(true)
+                } else {
+                    _errorMessage.value = "Ошибка регистрации"
+                    Toast.makeText(context, "Ошибка регистрации", Toast.LENGTH_SHORT).show()
+                    _isLoading.value = false
+                    onResult(false)
+                }
+            } catch (e: FirebaseAuthException) {
+                val errorMessage = getUserFriendlyError(e.errorCode)
+                Log.d("MyLog", "createUserWithEmailAndPassword: Failed", e)
+                _errorMessage.value = errorMessage
+                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                _isLoading.value = false
+                onResult(false)
+            }
+        }
     }
 
     private fun getUserFriendlyError(errorCode: String?): String {
@@ -332,9 +214,9 @@ class LoginSigninViewModel : ViewModel() {
             "ERROR_USER_NOT_FOUND" -> "Пользователь с таким email не найден"
             "ERROR_WRONG_PASSWORD" -> "Неверный пароль"
             "ERROR_EMAIL_ALREADY_IN_USE" -> "Пользователь с таким email уже существует"
-            "ERROR_WEAK_PASSWORD" -> "Пароль слишком слабый. Используйте не менее 6 символов"
-            "ERROR_NETWORK_REQUEST_FAILED" -> "Ошибка сети. Проверьте подключение к интернету"
-            "ERROR_TOO_MANY_REQUESTS" -> "Слишком много попыток. Попробуйте позже"
+            "ERROR_WEAK_PASSWORD" -> "Пароль слишком слабый"
+            "ERROR_NETWORK_REQUEST_FAILED" -> "Ошибка сети"
+            "ERROR_TOO_MANY_REQUESTS" -> "Слишком много попыток"
             "ERROR_USER_DISABLED" -> "Аккаунт заблокирован"
             "ERROR_OPERATION_NOT_ALLOWED" -> "Операция не разрешена"
             "ERROR_INVALID_CREDENTIAL" -> "Неверный email или пароль"
@@ -343,30 +225,14 @@ class LoginSigninViewModel : ViewModel() {
         }
     }
 
-    // Оптимизированные методы очистки и сброса состояния
+    // Методы очистки и сброса состояния
     fun clearFields() {
         _email.value = ""
         _password.value = ""
         _errorMessage.value = ""
-        _authState.value = AuthResult.Success
     }
-    
-    fun resetAuthState() {
-        _authState.value = AuthResult.Success
-        _errorMessage.value = ""
-        _isLoading.value = false
-    }
-    
-    // Метод для получения текущего состояния авторизации
-    fun getCurrentAuthState(): AuthResult = _authState.value
-    
-    // Метод для проверки валидности email в реальном времени
-    fun validateEmailRealtime(email: String): ValidationResult = validateEmail(email)
-    
-    // Метод для проверки валидности пароля в реальном времени
-    fun validatePasswordRealtime(password: String, isRegistration: Boolean = false): ValidationResult = 
-        validatePassword(password, isRegistration)
-    fun signOut() {
+
+    fun signOut(context: Context, onResult: () -> Unit) {
         viewModelScope.launch {
             try {
                 // Выход из Firebase
@@ -382,9 +248,13 @@ class LoginSigninViewModel : ViewModel() {
                 _errorMessage.value = ""
                 _isGoogleUser.value = false
 
+                Toast.makeText(context, "Вы вышли из системы", Toast.LENGTH_SHORT).show()
                 Log.d("MyLog", "User signed out successfully")
+                onResult()
             } catch (e: Exception) {
                 Log.e("MyLog", "Error during sign out", e)
+                Toast.makeText(context, "Ошибка при выходе из системы", Toast.LENGTH_SHORT).show()
+                onResult()
             }
         }
     }
@@ -401,65 +271,49 @@ class LoginSigninViewModel : ViewModel() {
         return auth.currentUser?.email ?: ""
     }
 
-    // Оптимизированный метод удаления аккаунта
-    suspend fun deleteAccount(): AuthResult {
-        _authState.value = AuthResult.Loading
-        _isLoading.value = true
-        
-        return try {
-            val user = auth.currentUser
-            if (user == null) {
-                val errorMessage = "Пользователь не авторизован"
-                _authState.value = AuthResult.Error(errorMessage)
-                _errorMessage.value = errorMessage
-                _isLoading.value = false
-                return AuthResult.Error(errorMessage)
-            }
-            
-            // Валидация данных для реавторизации
-            val validation = validateCredentials(_email.value, _password.value, false)
-            if (validation is ValidationResult.Invalid) {
-                _authState.value = AuthResult.Error(validation.message)
-                _errorMessage.value = validation.message
-                _isLoading.value = false
-                return AuthResult.Error(validation.message)
-            }
-            
-            // Реавторизация
-            val credential = EmailAuthProvider.getCredential(_email.value, _password.value)
-            user.reauthenticate(credential).await()
-            
-            // Удаление аккаунта
-            user.delete().await()
-            
-            Log.d("MyLog", "Account deleted successfully")
-            _authState.value = AuthResult.Success
-            _errorMessage.value = ""
-            _isLoading.value = false
-            AuthResult.Success
-            
-        } catch (e: FirebaseAuthException) {
-            val errorMessage = getUserFriendlyError(e.errorCode)
-            Log.d("MyLog", "Account deletion failed", e)
-            _authState.value = AuthResult.Error(errorMessage)
-            _errorMessage.value = errorMessage
-            _isLoading.value = false
-            AuthResult.Error(errorMessage)
-        } catch (e: Exception) {
-            val errorMessage = "Ошибка при удалении аккаунта"
-            Log.d("MyLog", "Account deletion failed", e)
-            _authState.value = AuthResult.Error(errorMessage)
-            _errorMessage.value = errorMessage
-            _isLoading.value = false
-            AuthResult.Error(errorMessage)
-        }
-    }
-    
-    // Обратная совместимость с callback'ами
-    fun signDelete(onResult: (Boolean) -> Unit) {
+    // Метод удаления аккаунта (ИСПРАВЛЕННАЯ СИГНАТУРА)
+    fun signDelete(context: Context, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val result = deleteAccount()
-            onResult(result is AuthResult.Success)
+            _isLoading.value = true
+
+            try {
+                val user = auth.currentUser
+                if (user == null) {
+                    _errorMessage.value = "Пользователь не авторизован"
+                    Toast.makeText(context, "Пользователь не авторизован", Toast.LENGTH_SHORT).show()
+                    _isLoading.value = false
+                    onResult(false)
+                    return@launch
+                }
+
+                // Реавторизация
+                val credential = EmailAuthProvider.getCredential(_email.value, _password.value)
+                user.reauthenticate(credential).await()
+
+                // Удаление аккаунта
+                user.delete().await()
+
+                Log.d("MyLog", "Account deleted successfully")
+                _errorMessage.value = ""
+                _isLoading.value = false
+                Toast.makeText(context, "Аккаунт удален", Toast.LENGTH_SHORT).show()
+                onResult(true)
+
+            } catch (e: FirebaseAuthException) {
+                val errorMessage = getUserFriendlyError(e.errorCode)
+                Log.d("MyLog", "Account deletion failed", e)
+                _errorMessage.value = errorMessage
+                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                _isLoading.value = false
+                onResult(false)
+            } catch (e: Exception) {
+                val errorMessage = "Ошибка при удалении аккаунта"
+                Log.d("MyLog", "Account deletion failed", e)
+                _errorMessage.value = errorMessage
+                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                _isLoading.value = false
+                onResult(false)
+            }
         }
     }
 }
