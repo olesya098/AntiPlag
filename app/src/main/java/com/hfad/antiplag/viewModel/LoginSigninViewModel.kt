@@ -258,7 +258,7 @@ class LoginSigninViewModel : ViewModel() {
                 } catch (e: Exception) {
                     Log.w("MyLog", "Google revoke access failed", e)
                     // Игнорируем ошибку отзыва доступа
-                }
+                }//
 
                 Toast.makeText(context, "Вы вышли из системы", Toast.LENGTH_SHORT).show()
                 Log.d("MyLog", "User signed out successfully")
