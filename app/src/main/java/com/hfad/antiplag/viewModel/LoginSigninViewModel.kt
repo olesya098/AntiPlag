@@ -231,16 +231,11 @@ class LoginSigninViewModel : ViewModel() {
         _password.value = ""
         _errorMessage.value = ""
     }
-
     fun signOut(context: Context, onResult: () -> Unit) {
         viewModelScope.launch {
             try {
                 // Выход из Firebase
                 auth.signOut()
-
-                // Полная очистка Google Sign-In
-                googleSignInClient.signOut().await()
-                googleSignInClient.revokeAccess().await()
 
                 // Очистка локальных данных
                 _email.value = ""
@@ -248,12 +243,34 @@ class LoginSigninViewModel : ViewModel() {
                 _errorMessage.value = ""
                 _isGoogleUser.value = false
 
+                // Безопасный выход из Google Sign-In с обработкой исключений
+                try {
+                    googleSignInClient.signOut().await()
+                    Log.d("MyLog", "Google sign out successful")
+                } catch (e: Exception) {
+                    Log.w("MyLog", "Google sign out failed (may be already signed out)", e)
+                    // Игнорируем ошибку выхода, так как пользователь может быть уже вышел
+                }
+
+                try {
+                    googleSignInClient.revokeAccess().await()
+                    Log.d("MyLog", "Google revoke access successful")
+                } catch (e: Exception) {
+                    Log.w("MyLog", "Google revoke access failed", e)
+                    // Игнорируем ошибку отзыва доступа
+                }
+
                 Toast.makeText(context, "Вы вышли из системы", Toast.LENGTH_SHORT).show()
                 Log.d("MyLog", "User signed out successfully")
                 onResult()
             } catch (e: Exception) {
                 Log.e("MyLog", "Error during sign out", e)
-                Toast.makeText(context, "Ошибка при выходе из системы", Toast.LENGTH_SHORT).show()
+                // Даже при ошибке очищаем локальные данные и вызываем callback
+                _email.value = ""
+                _password.value = ""
+                _errorMessage.value = ""
+                _isGoogleUser.value = false
+                Toast.makeText(context, "Вы вышли из системы", Toast.LENGTH_SHORT).show()
                 onResult()
             }
         }
