@@ -70,8 +70,8 @@ fun NavigationDrawer(
     onOut: () -> Unit,
     onDelete: () -> Unit,
     email: String,
-    onNavigateToLogin: () -> Unit, // Добавьте этот параметр
-    isGoogleUser: Boolean, // <- добавлено
+    onNavigateToLogin: () -> Unit,
+    isGoogleUser: Boolean,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -126,7 +126,7 @@ fun NavigationDrawer(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 32.dp), // Уменьшил отступ
+                        .padding(vertical = 32.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -170,16 +170,20 @@ fun NavigationDrawer(
                             onClick = {
                                 scope.launch {
                                     drawerState.close()
-                                    selectedItem = item
+
+                                    // Для обычных экранов обновляем selectedItem
+                                    if (item.route != Routes.LOGOUT && item.route != Routes.DELETE) {
+                                        selectedItem = item
+                                    }
 
                                     when (item.route) {
                                         Routes.LOGOUT -> {
                                             onOut()
-                                            onNavigateToLogin() // Добавьте переход на логин
+                                            onNavigateToLogin() // Только здесь вызываем навигацию
                                         }
                                         Routes.DELETE -> {
                                             onDelete()
-                                            onNavigateToLogin() // И для удаления аккаунта тоже
+                                            onNavigateToLogin() // Только здесь вызываем навигацию
                                         }
                                         else -> {
                                             navController.navigate(item.route) {

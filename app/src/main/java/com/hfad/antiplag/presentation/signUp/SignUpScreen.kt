@@ -1,6 +1,5 @@
 package com.hfad.antiplag.presentation.signUp
 
-import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -150,42 +149,6 @@ fun SignUpScreen(navController: NavController, viewModel: LoginSigninViewModel) 
             },
             modifier = Modifier.padding()
         )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 24.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Divider(
-                modifier = Modifier.weight(1f),
-                color = blueLite,
-                thickness = 1.dp
-            )
-            Text(
-                text = "Or",
-                modifier = Modifier.padding(horizontal = 12.dp),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Divider(
-                modifier = Modifier.weight(1f),
-                color = blueLite,
-                thickness = 1.dp
-            )
-        }
-
-        if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.size(48.dp))
-        } else {
-            Image(
-                painter = painterResource(id = R.drawable.google),
-                contentDescription = stringResource(R.string.sign_in_with_google),
-                modifier = Modifier
-                    .size(48.dp)
-                    .clickable { viewModel.signInWithGoogle(googleSignInLauncher) }
-            )
-        }
 
         Spacer(modifier = Modifier.weight(1f))
         Row(

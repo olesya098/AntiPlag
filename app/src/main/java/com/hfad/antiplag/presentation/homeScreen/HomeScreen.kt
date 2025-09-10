@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -33,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -95,6 +97,8 @@ fun HomeScreen(
             }
         }
     }
+    val topBarState = rememberTopAppBarState()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topBarState)
 
     NavigationDrawer(
         drawerState = drawerState,
@@ -120,9 +124,10 @@ fun HomeScreen(
                 }
             }
         },
+
         onNavigateToLogin = {
             navController.navigate(Routes.LOGIN) {
-                popUpTo(navController.graph.startDestinationId) {
+                popUpTo(0) { // Очищаем весь стек навигации
                     inclusive = true
                 }
             }
@@ -130,15 +135,13 @@ fun HomeScreen(
         isGoogleUser = isGoogleUser,
     ) { innerPadding ->
         Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
                         .background(MaterialTheme.colorScheme.background)
-                        .padding(innerPadding)
                 ) {
-                    // TopBar content
                     androidx.compose.material3.TopAppBar(
                         title = {
                             Box(
@@ -152,7 +155,6 @@ fun HomeScreen(
                                 )
                             }
                         },
-
                         navigationIcon = {
                             Icon(
                                 painter = painterResource(id = R.drawable.menu),
@@ -182,6 +184,8 @@ fun HomeScreen(
                         colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = MaterialTheme.colorScheme.background
                         ),
+                        // ДОБАВЛЕНО: scroll behavior
+                        scrollBehavior = scrollBehavior
                     )
                     Divider(
                         color = MaterialTheme.colorScheme.scrim,
@@ -197,7 +201,7 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 20.dp)
+                        .padding(bottom = 10.dp)
                         .background(MaterialTheme.colorScheme.background)
                 ) {
                     BottomBar(plagiarismCheckViewModel)
@@ -211,7 +215,6 @@ fun HomeScreen(
                     .padding(scaffoldPadding)
                     .background(MaterialTheme.colorScheme.background)
             ) {
-                // Основной контент - центрированный
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
