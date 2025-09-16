@@ -13,23 +13,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.hfad.antiplag.ui.theme.message
+import java.util.Date
+import java.util.UUID
 
-@Composable
-fun Message(
-    text: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .clip(shape = RoundedCornerShape(14.dp))
-            .background(message)
-            .wrapContentWidth()
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyMedium,
-        )
+//
+//@Composable
+//fun Message(
+//    text: String,
+//    modifier: Modifier = Modifier
+//) {
+//    Column(
+//        modifier = modifier
+//            .clip(shape = RoundedCornerShape(14.dp))
+//            .background(message)
+//            .wrapContentWidth()
+//    ) {
+//        Text(
+//            text = text,
+//            style = MaterialTheme.typography.bodyMedium,
+//        )
+//
+//
+//    }
+//}
+// model/Message.kt
+data class Message(
+    val id: String = UUID.randomUUID().toString(),
+    val text: String = "",
+    val timestamp: Date = Date(),
+    val type: MessageType = MessageType.SYSTEM
+)
 
-
-    }
+enum class MessageType {
+    SYSTEM, USER, ERROR, SUCCESS, WAITING, CHECKING
 }
+

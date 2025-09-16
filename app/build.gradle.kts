@@ -64,7 +64,11 @@ dependencies {
     // Firebase - используем BOM для согласованных версий
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-database-ktx")
+    implementation ("com.google.firebase:firebase-analytics")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -77,6 +81,7 @@ dependencies {
     implementation(libs.play.services.maps)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.room.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

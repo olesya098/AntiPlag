@@ -26,7 +26,7 @@ private const val TAG = "FilePicker"
 
 @Composable
 fun FilePicker(
-    onFile: (Uri) -> Unit
+    onFile: (Uri) -> Unit,
 ) {
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let { onFile(it) }

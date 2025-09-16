@@ -28,6 +28,7 @@ import com.hfad.antiplag.presentation.result.ResultScreen
 import com.hfad.antiplag.presentation.signUp.SignUpScreen
 import com.hfad.antiplag.presentation.splashScreen.SplashScreen
 import com.hfad.antiplag.viewModel.LoginSigninViewModel
+import com.hfad.antiplag.viewModel.MessageViewModel
 import com.hfad.antiplag.viewModel.PlagiarismCheckViewModel
 import com.hfad.antiplag.viewModel.ThemeViewModel
 
@@ -35,6 +36,7 @@ import com.hfad.antiplag.viewModel.ThemeViewModel
 @Composable
 fun AppNavigation(themeViewModel: ThemeViewModel) {
     val navController = rememberNavController()
+    val messageViewModel: MessageViewModel = viewModel()
     val plagiarismCheckViewModel = viewModel<PlagiarismCheckViewModel>()
     val logInSigninViewModel = viewModel<LoginSigninViewModel>()
 
@@ -163,7 +165,13 @@ fun AppNavigation(themeViewModel: ThemeViewModel) {
 
         }
         composable(Routes.HOME) {
-            HomeScreen(navController, plagiarismCheckViewModel, logInSigninViewModel, themeViewModel)
+            HomeScreen(
+                navController = navController,
+                plagiarismCheckViewModel = plagiarismCheckViewModel,
+                viewModel = logInSigninViewModel,
+                themeViewModel = themeViewModel,
+                messageViewModel = messageViewModel
+            )
         }
         composable(Routes.LOGIN) {
             LogInScreen(navController, logInSigninViewModel)

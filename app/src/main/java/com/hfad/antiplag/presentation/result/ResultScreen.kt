@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,11 +23,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -114,6 +118,7 @@ fun ResultScreen(navController: NavController, plagiarismCheckViewModel: Plagiar
                     items(report.data.reportData.sources) {
                         Text(
                             text = it.source,
+                            textAlign = TextAlign.Center,
                             modifier = Modifier.clickable {
                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.source))
                                 context.startActivity(intent)
@@ -133,34 +138,54 @@ private fun PieChart(
     plagiarismPercent: Int,
     originalityPercent: Int,
     modifier: Modifier = Modifier,
-    plagiarismColor: Color = Color(0xFFE53935), // красный
-    originalityColor: Color = Color(0xFF43A047) // зелёный
+    plagiarismColor: Color = Color(0xFFE53935),
+    originalityColor: Color = Color(0xFF43A047),
+    backgroundColor: Color = Color.LightGray.copy(alpha = 0.3f)
 ) {
     val safePlag = plagiarismPercent.coerceIn(0, 100)
     val safeOrig = originalityPercent.coerceIn(0, 100)
-    val total = (safePlag + safeOrig).takeIf { it > 0 } ?: 1
 
+    // Для равномерного круга всегда используем 360 градусов
     val startAngle = -90f
-    val plagSweep = 360f * (safePlag / total.toFloat())
-    val origSweep = 360f - plagSweep
+    val plagSweep = 360f * (safePlag / 100f)
+    val origSweep = 360f * (safeOrig / 100f)
 
-    Canvas(modifier = modifier) {
-        drawArc(
-            color = plagiarismColor,
-            startAngle = startAngle,
-            sweepAngle = plagSweep,
-            useCenter = true
-        )
-        drawArc(
-            color = originalityColor,
-            startAngle = startAngle + plagSweep,
-            sweepAngle = origSweep,
-            useCenter = true
-        )
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val center = Offset(size.width / 2, size.height / 2)
+            val radius = size.minDimension / 2
+
+            // Фоновый круг
+            drawCircle(
+                color = backgroundColor,
+                radius = radius,
+                center = center
+            )
+
+            // Круг плагиата (красный)
+            drawArc(
+                color = plagiarismColor,
+                startAngle = startAngle,
+                sweepAngle = plagSweep,
+                useCenter = true,
+                size = Size(radius * 2, radius * 2),
+                topLeft = Offset(center.x - radius, center.y - radius)
+            )
+
+            // Круг оригинальности (зеленый)
+            drawArc(
+                color = originalityColor,
+                startAngle = startAngle + plagSweep,
+                sweepAngle = origSweep,
+                useCenter = true,
+                size = Size(radius * 2, radius * 2),
+                topLeft = Offset(center.x - radius, center.y - radius)
+            )
+        }
+
     }
 }
 
-// Упрощенная версия предпросмотра без сложных зависимостей
 @Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
 @Composable
 fun SimpleResultScreenPreview() {

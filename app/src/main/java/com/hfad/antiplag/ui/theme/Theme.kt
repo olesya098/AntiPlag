@@ -100,7 +100,7 @@ fun AntiPlagTheme(
         darkColorScheme(
             background = coolBlack, //задний фон
             primary = com.hfad.antiplag.ui.theme.white, //title
-//    secondary = white.copy(alpha = 0.6f), //subtitle
+            secondary = grayDark, //subtitle
             surface = darkGray.copy(alpha = 0.5f),
 //    onPrimary = deepBlue,
             scrim = grayDevider,//buttom
@@ -128,7 +128,7 @@ fun AntiPlagTheme(
         lightColorScheme(
             background = com.hfad.antiplag.ui.theme.white,
             primary = coolBlack, //title
-//    secondary = bigText.copy(alpha = 0.6f), //subtitle
+            secondary = grayLite, //subtitle
             surface = liteGray.copy(alpha = 0.3f),
 //    onPrimary = deepBlue,
             scrim = grayDeviderLite,//buttom

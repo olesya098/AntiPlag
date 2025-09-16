@@ -12,11 +12,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.Firebase
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -60,7 +62,9 @@ class LoginSigninViewModel : ViewModel() {
         val signInIntent = googleSignInClient.signInIntent
         launcher.launch(signInIntent)
     }
-
+    fun getCurrentUserId(): String {
+        return Firebase.auth.currentUser?.uid ?: ""
+    }
     // Обработка результата входа через Google (ИСПРАВЛЕННАЯ СИГНАТУРА)
     fun handleGoogleSignInResult(data: Intent?, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {

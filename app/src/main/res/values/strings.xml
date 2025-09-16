@@ -27,5 +27,10 @@
 
     <string name="default_web_client_id">897098036218-8ljhnqvclakrs441vkr0kd9dfm8p57i8.apps.googleusercontent.com</string>
     <string name="or">or</string>
+    <string name="selected_file">Selected file</string>
+    <string name="cancel_file_selection">Cancel file selection</string>
+    <string name="attached_file">Attached file</string>
+    <string name="remove_file">Remove file</string>
+
 
 </resources>
