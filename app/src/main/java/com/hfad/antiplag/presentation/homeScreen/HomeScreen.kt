@@ -318,7 +318,7 @@ fun HomeScreen(
                         items(messages) { message ->
                             MessageBubble(
                                 message = message.text,
-                                type = message.type, // Передаем тип сообщения
+                                type = message.type,
                                 modifier = if (message.type == MessageType.SUCCESS) {
                                     Modifier.clickable {
                                         navController.navigate(Routes.RESULTS)
