@@ -37,13 +37,17 @@ import com.hfad.antiplag.R
 import com.hfad.antiplag.presentation.components.message.MessageType
 import com.hfad.antiplag.ui.theme.blueLite
 import com.hfad.antiplag.ui.theme.grayDeviderLite
-
+import com.itextpdf.text.pdf.security.LtvTimestamp.timestamp
+import java.util.Date
 @Composable
 fun MessageBubble(
     message: String,
-    type: MessageType = MessageType.SYSTEM, // Добавляем параметр типа
+    timestamp: Date,
+    type: MessageType = MessageType.SYSTEM,
     modifier: Modifier = Modifier,
 ) {
+    val isUserMessage = type == MessageType.USER
+
     val backgroundColor = when (type) {
         MessageType.USER -> blueLite.copy(alpha = 0.1f)
         MessageType.ERROR -> MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
@@ -56,6 +60,7 @@ fun MessageBubble(
         MessageType.ERROR -> MaterialTheme.colorScheme.error
         else -> MaterialTheme.colorScheme.onSurface
     }
+
     val shape = when (type) {
         MessageType.USER ->
             RoundedCornerShape(
@@ -64,34 +69,112 @@ fun MessageBubble(
                 bottomStart = 12.dp,
                 bottomEnd = 12.dp
             )
-
         else ->
             RoundedCornerShape(
-            topStart = 1.dp,
-            topEnd = 12.dp,
-            bottomStart = 12.dp,
-            bottomEnd = 12.dp
-        )
+                topStart = 1.dp,
+                topEnd = 12.dp,
+                bottomStart = 12.dp,
+                bottomEnd = 12.dp
+            )
     }
 
-    Box(
-        modifier = modifier
-            .wrapContentWidth()
-            .background(backgroundColor, shape)
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.Top
     ) {
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyMedium,
-            color = textColor
-        )
+        if (isUserMessage) {
+            // Сообщение пользователя - справа
+            Spacer(modifier = Modifier.weight(1f))
+            Box(
+                modifier = modifier
+                    .wrapContentWidth()
+                    .background(backgroundColor, shape)
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+            ) {
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = textColor
+                )
+            }
+        } else {
+            // Сообщение системы - слева
+            Box(
+                modifier = modifier
+                    .wrapContentWidth()
+                    .background(backgroundColor, shape)
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+            ) {
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = textColor
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+        }
     }
 }
 
-@Preview
-@Composable
-fun MessagePreview() {
-    MessageBubble(
-        message = "Привет!",
-    )
-}
+
+//@Composable
+//fun MessageBubble(
+//    message: String,
+//    timestamp: Date,
+//    type: MessageType = MessageType.SYSTEM, // Добавляем параметр типа
+//    modifier: Modifier = Modifier,
+//) {
+//    val backgroundColor = when (type) {
+//        MessageType.USER -> blueLite.copy(alpha = 0.1f)
+//        MessageType.ERROR -> MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
+//        MessageType.SUCCESS -> MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+//        else -> grayDeviderLite
+//    }
+//
+//    val textColor = when (type) {
+//        MessageType.USER -> blueLite
+//        MessageType.ERROR -> MaterialTheme.colorScheme.error
+//        else -> MaterialTheme.colorScheme.onSurface
+//    }
+//    val shape = when (type) {
+//        MessageType.USER ->
+//            RoundedCornerShape(
+//                topStart = 12.dp,
+//                topEnd = 1.dp,
+//                bottomStart = 12.dp,
+//                bottomEnd = 12.dp
+//            )
+//
+//        else ->
+//            RoundedCornerShape(
+//            topStart = 1.dp,
+//            topEnd = 12.dp,
+//            bottomStart = 12.dp,
+//            bottomEnd = 12.dp
+//        )
+//    }
+//
+//    Box(
+//        modifier = modifier
+//            .wrapContentWidth()
+//            .background(backgroundColor, shape)
+//            .padding(horizontal = 16.dp, vertical = 12.dp)
+//    ) {
+//        Text(
+//            text = message,
+//            style = MaterialTheme.typography.bodyMedium,
+//            color = textColor
+//        )
+//
+//    }
+//}
+
+//@Preview
+//@Composable
+//fun MessagePreview() {
+//    MessageBubble(
+//        message = "Привет!"
+//    )
+//}

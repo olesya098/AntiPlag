@@ -319,6 +319,7 @@ fun HomeScreen(
                             MessageBubble(
                                 message = message.text,
                                 type = message.type,
+                                timestamp = message.timestamp,
                                 modifier = if (message.type == MessageType.SUCCESS) {
                                     Modifier.clickable {
                                         navController.navigate(Routes.RESULTS)
