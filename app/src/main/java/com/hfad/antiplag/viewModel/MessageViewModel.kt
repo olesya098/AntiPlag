@@ -19,11 +19,11 @@ class MessageViewModel : ViewModel() {
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     val messages: StateFlow<List<Message>> = _messages
 
-    fun initMessages(userId: String) {
+    fun initChat(userId: String) {
         messagesListener?.remove()
         messagesListener = db.collection("users")
             .document(userId)
-            .collection("messages")
+            .collection("chat")
             .orderBy("timestamp")
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
@@ -50,7 +50,7 @@ class MessageViewModel : ViewModel() {
 
                 db.collection("users")
                     .document(userId)
-                    .collection("messages")
+                    .collection("chat")
                     .document(message.id)
                     .set(message)
                     .addOnSuccessListener {

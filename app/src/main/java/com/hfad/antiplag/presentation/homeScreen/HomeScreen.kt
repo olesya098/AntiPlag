@@ -91,7 +91,7 @@ fun HomeScreen(
         try {
             val userId = viewModel.getCurrentUserId()
             if (userId.isNotEmpty()) {
-                messageViewModel.initMessages(userId)
+                messageViewModel.initChat(userId)
             }
         } catch (e: Exception) {
             Log.e("HomeScreen", "Firestore initialization error: ${e.message}")
